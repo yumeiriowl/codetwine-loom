@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "No tests found, exiting with code 1\nRun with `--passWithNoTests` to exit with code 0\nIn /fixture/ts/N\n  4 files checked.\n  testMatch: **/__tests__/**/*.[jt]s?(x), **/?(*.)+(spec|test).[tj]s?(x) - 0 matches\n  testPathIgnorePatterns: /node_modules/ - 4 matches\n  testRegex:  - 0 matches\nPattern:  - 0 matches\n"
+}

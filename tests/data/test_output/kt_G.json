@@ -1,0 +1,10 @@
+{
+ "command": [
+  "gradle",
+  "test",
+  "--continue",
+  "--console=plain"
+ ],
+ "returncode": 0,
+ "output": "> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :processResources NO-SOURCE\n> Task :processTestResources NO-SOURCE\n> Task :compileKotlin\n> Task :compileJava NO-SOURCE\n> Task :classes UP-TO-DATE\n> Task :jar\n> Task :compileTestKotlin\n> Task :compileTestJava NO-SOURCE\n> Task :testClasses UP-TO-DATE\n> Task :test\n\nBUILD SUCCESSFUL in 1s\n4 actionable tasks: 4 executed\n"
+}

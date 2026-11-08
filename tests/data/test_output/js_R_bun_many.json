@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "bun test v1.4.4 (38afee6c8)\n\ntest/calc.test.js:\n(pass) calc > adds [0.02ms]\n3 | describe(\"calc\", () => {\n4 |   test(\"adds\", () => {\n5 |     expect(add(2, 2)).toBe(4);\n6 |   });\n7 |   test(\"bar\", () => {\n8 |     expect(add(2, 2)).toBe(5);\n                          ^\nerror: expect(received).toBe(expected)\n\nExpected: 5\nReceived: 4\n\n      at <anonymous> (/fixture/js/R_bun_many/test/calc.test.js:8:23)\n(fail) calc > bar [1.24ms]\n\ntest/table.test.js:\n(pass) adds 1 to 0 [0.02ms]\n(pass) adds 2 to 0\n(pass) adds 3 to 0\n(pass) adds 4 to 0\n(pass) adds 5 to 0\n(pass) adds 6 to 0\n(pass) adds 7 to 0\n(pass) adds 8 to 0\n(pass) adds 9 to 0\n(pass) adds 10 to 0\n(pass) adds 11 to 0\n(pass) adds 12 to 0\n(pass) adds 13 to 0\n(pass) adds 14 to 0\n(pass) adds 15 to 0\n(pass) adds 16 to 0\n(pass) adds 17 to 0\n(pass) adds 18 to 0\n(pass) adds 19 to 0\n(pass) adds 20 to 0\n(pass) adds 21 to 0\n(pass) adds 22 to 0\n(pass) adds 23 to 0\n(pass) adds 24 to 0\n\n1 tests failed:\n(fail) calc > bar [1.24ms]\n\n 25 pass\n 1 fail\n 26 expect() calls\nRan 26 tests across 2 files. [28.00ms]\n"
+}

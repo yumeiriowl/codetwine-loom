@@ -1,0 +1,10 @@
+{
+ "command": [
+  "cargo",
+  "test",
+  "--workspace",
+  "--no-fail-fast"
+ ],
+ "returncode": 101,
+ "output": "   Compiling calc v0.1.0 (/fixture/rs/B)\nerror[E0425]: cannot find value `c` in this scope\n --> src/lib.rs:6:9\n  |\n6 |     a - c\n  |         ^\n  |\nhelp: a local variable with a similar name exists\n  |\n6 -     a - c\n6 +     a - a\n  |\n\nFor more information about this error, try `rustc --explain E0425`.\nerror: could not compile `calc` (lib) due to 1 previous error\nwarning: build failed, waiting for other jobs to finish...\nerror: could not compile `calc` (lib test) due to 1 previous error\n"
+}

@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "output": "F\n======================================================================\nFAIL: test_each_tag (test_calc.EachTest.test_each_tag) (tags={'beta', 'alpha', 'gamma', 'delta'})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 15, in test_each_tag\n    self.assertEqual(calc.sub(1, 2) if len(tags) > 2 else calc.add(1, 2), want)\nAssertionError: 3 != -1\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=1)\n",
+ "returncode": 1
+}

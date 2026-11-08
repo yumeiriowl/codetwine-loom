@@ -1,0 +1,17 @@
+{
+ "command": [
+  "uv",
+  "run",
+  "--with",
+  "pytest",
+  "--with",
+  "pytest-asyncio",
+  "pytest",
+  "--asyncio-mode=auto",
+  "-q",
+  "-W",
+  "ignore:The configuration option \"asyncio_default_fixture_loop_scope\" is unset.:pytest.PytestDeprecationWarning"
+ ],
+ "returncode": 2,
+ "output": "\n==================================== ERRORS ====================================\n______________________ ERROR collecting tests/test_foo.py ______________________\n/root/.cache/uv/archive-v0/91EqZLgu5LDTLoYK/lib/python3.12/site-packages/_pytest/python.py:528: in importtestmodule\n    mod = import_path(\n/root/.cache/uv/archive-v0/91EqZLgu5LDTLoYK/lib/python3.12/site-packages/_pytest/pathlib.py:640: in import_path\n    importlib.import_module(module_name)\n/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/root/.cache/uv/archive-v0/91EqZLgu5LDTLoYK/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:185: in exec_module\n    exec(co, module.__dict__)\ntests/test_foo.py:1: in <module>\n    from m import add\nE     File \"/fixture/py/B/m.py\", line 1\nE       def add(a, b)\nE                    ^\nE   SyntaxError: expected ':'\n=========================== short test summary info ============================\nERROR tests/test_foo.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.10s\n"
+}

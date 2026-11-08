@@ -1,0 +1,16 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-p",
+  "no:cacheprovider",
+  "--color=yes",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "pytest": "8.4.2",
+ "returncode": 5,
+ "output": "\u001b[1m============================= test session starts ==============================\u001b[0m\nplatform linux -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /fixture\ncollected 0 items / 1 skipped\n\n\u001b[33m============================== \u001b[33m\u001b[1m1 skipped\u001b[0m\u001b[33m in 0.00s\u001b[0m\u001b[33m ==============================\u001b[0m\n"
+}

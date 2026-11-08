@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-c"
+ ],
+ "returncode": 1,
+ "output": "[1/6] Building C object CMakeFiles/test_bar.dir/tests/test_bar.c.o\nFAILED: CMakeFiles/test_bar.dir/tests/test_bar.c.o \n/usr/bin/cc    -MD -MT CMakeFiles/test_bar.dir/tests/test_bar.c.o -MF CMakeFiles/test_bar.dir/tests/test_bar.c.o.d -o CMakeFiles/test_bar.dir/tests/test_bar.c.o -c /fixture/c/B/tests/test_bar.c\n/fixture/c/B/tests/test_bar.c: In function \u2018main\u2019:\n/fixture/c/B/tests/test_bar.c:3:22: error: too many arguments to function \u2018mul\u2019\n    3 | int main(void) { if (mul(2, 3, 4) != 6) { printf(\"mul(2, 3) != 6\\n\"); return 1; } return 0; }\n      |                      ^~~\n/fixture/c/B/tests/test_bar.c:2:6: note: declared here\n    2 | long mul(long a, long b);\n      |      ^~~\n[2/6] Building C object CMakeFiles/calc.dir/src/basic.c.o\n[3/6] Building C object CMakeFiles/test_one.dir/tests/test_one.c.o\n[4/6] Linking C static library libcalc.a\n[5/6] Linking C executable test_one\nninja: build stopped: cannot make progress due to previous errors.\n"
+}

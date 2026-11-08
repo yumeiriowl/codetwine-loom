@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests",
+  "-v"
+ ],
+ "python": "3.12.3",
+ "output": "test_add_table (test_calc.TableTest.test_add_table) ... \n  test_add_table (test_calc.TableTest.test_add_table) (a=0, b=0) ... skipped 'zero is checked elsewhere'\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK (skipped=1)\n",
+ "returncode": 0
+}

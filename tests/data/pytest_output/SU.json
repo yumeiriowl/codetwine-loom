@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "pytest": "9.1.1",
+ "returncode": 1,
+ "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0\nrootdir: /fixture\nplugins: anyio-4.14.2\ncollected 2 items\n\ntests/test_ok.py .                                                       [ 50%]\ntests/test_y.py .                                                       [100%]\n\n=================================== FAILURES ===================================\n________________________________ T.test_y (i=1) ________________________________\n\nself = <test_y.T testMethod=test_y>\n\n    def test_y(self):\n        for i in range(3):\n            with self.subTest(i=i):\n>               self.assertNotIn(i, (1,))\nE               AssertionError: 1 unexpectedly found in (1,)\n\ntests/test_y.py:8: AssertionError\n=========================== short test summary info ============================\nSUBFAILED(i=1) tests/test_y.py::T::test_y - AssertionError: 1 unexpectedly fo...\n========================= 1 failed, 2 passed in 0.03s ==========================\n"
+}

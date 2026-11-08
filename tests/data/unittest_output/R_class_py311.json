@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "output": "....E\n======================================================================\nERROR: setUpClass (test_calc.SetUpTest)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 23, in setUpClass\n    raise RuntimeError(\"the table could not be made\")\nRuntimeError: the table could not be made\n\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nFAILED (errors=1)\n",
+ "returncode": 1
+}

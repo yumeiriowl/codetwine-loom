@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 0,
+ "output": "PASS test/foo.test.js\n  FooTest\n    \u2713 one (1 ms)\n    \u2713 bar\n\nTest Suites: 1 passed, 1 total\nTests:       2 passed, 2 total\nSnapshots:   0 total\nTime:        0.414 s\nRan all test suites.\n"
+}

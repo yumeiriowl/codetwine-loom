@@ -1,0 +1,8 @@
+{
+ "command": [
+  "dotnet",
+  "test"
+ ],
+ "returncode": 0,
+ "output": "Running tests from /fixture/cs/M/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (net10.0|x64)\n/fixture/cs/M/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (net10.0|x64) passed (250ms)\n\nTest run summary: Passed!\n  total: 4\n  failed: 0\n  succeeded: 4\n  skipped: 0\n  duration: 382ms\n"
+}

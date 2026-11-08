@@ -1,0 +1,17 @@
+{
+ "command": [
+  "uv",
+  "run",
+  "--with",
+  "pytest",
+  "--with",
+  "pytest-asyncio",
+  "pytest",
+  "--asyncio-mode=auto",
+  "-q",
+  "-W",
+  "ignore:The configuration option \"asyncio_default_fixture_loop_scope\" is unset.:pytest.PytestDeprecationWarning"
+ ],
+ "returncode": 2,
+ "output": "error: Request failed after 3 retries in 25.1s\n  cause: Failed to fetch: https://pypi.org/simple/pytest-asyncio/\n  cause: error sending request for url (https://pypi.org/simple/pytest-asyncio/)\n  cause: client error (Connect)\n  cause: dns error\n  cause: failed to lookup address information: Try again\n"
+}

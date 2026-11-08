@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-r"
+ ],
+ "returncode": 1,
+ "output": "Error in `testthat::test_dir()`:\n! No test files found\nBacktrace:\n    ▆\n 1. └─global main()\n 2.   └─testthat::test_dir(TEST_DIR, reporter = \"check\", stop_on_failure = TRUE)\n 3.     └─rlang::abort(\"No test files found\")\nExecution halted\n"
+}

@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "\n Exception during run: /fixture/js/B/calc.js:1\nexports.add = function (a, b) { return a + ; };\n                                           ^\n\nSyntaxError: Unexpected token ';'\n    at wrapSafe (node:internal/modules/cjs/loader:1472:18)\n    at Module._compile (node:internal/modules/cjs/loader:1501:20)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)\n    at Module.load (node:internal/modules/cjs/loader:1275:32)\n    at Module._load (node:internal/modules/cjs/loader:1096:12)\n    at Module.require (node:internal/modules/cjs/loader:1298:19)\n    at require (node:internal/modules/helpers:182:18)\n    at Object.<anonymous> (/fixture/js/B/test/calc.test.js:2:17)\n    at Module._compile (node:internal/modules/cjs/loader:1529:14)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)\n    at Module.load (node:internal/modules/cjs/loader:1275:32)\n    at Module._load (node:internal/modules/cjs/loader:1096:12)\n    at cjsLoader (node:internal/modules/esm/translators:298:15)\n    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:240:7)\n    at ModuleJob.run (node:internal/modules/esm/module_job:263:25)\n    at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)\n    at async formattedImport (/app/node_modules/mocha/lib/nodejs/esm-utils.js:10:14)\n    at async Object.requireModule [as requireOrImport] (/app/node_modules/mocha/lib/nodejs/esm-utils.js:102:30)\n    at async exports.loadFilesAsync (/app/node_modules/mocha/lib/nodejs/esm-utils.js:152:20)\n    at async singleRun (/app/node_modules/mocha/lib/cli/run-helpers.js:168:3)\n    at async exports.handler (/app/node_modules/mocha/lib/cli/run.js:379:5)\n"
+}

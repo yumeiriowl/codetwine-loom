@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "pytest": "9.1.1",
+ "returncode": 0,
+ "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0\nrootdir: /fixture\nplugins: anyio-4.14.2\ncollected 2 items\n\ntests/test_ok.py .                                                       [ 50%]\ntests/test_y.py .                                                        [100%]\n\n============================== 2 passed in 0.01s ===============================\n"
+}

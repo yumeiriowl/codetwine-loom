@@ -1,0 +1,17 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "--color=yes",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "pytest": "8.4.2",
+ "returncode": 1,
+ "output": "\u001b[32m.\u001b[0m\u001b[31mF\u001b[0m\u001b[31m                                                                       [100%]\u001b[0m\n=================================== FAILURES ===================================\n\u001b[31m\u001b[1m____________________________________ test_b ____________________________________\u001b[0m\n\n    \u001b[0m\u001b[94mdef\u001b[39;49;00m\u001b[90m \u001b[39;49;00m\u001b[92mtest_b\u001b[39;49;00m():\u001b[90m\u001b[39;49;00m\n>       \u001b[94massert\u001b[39;49;00m \u001b[94m2\u001b[39;49;00m == \u001b[94m3\u001b[39;49;00m\u001b[90m\u001b[39;49;00m\n\u001b[1m\u001b[31mE       assert 2 == 3\u001b[0m\n\n\u001b[1m\u001b[31mtests/test_ok.py\u001b[0m:6: AssertionError\n\u001b[36m\u001b[1m=========================== short test summary info ============================\u001b[0m\n\u001b[31mFAILED\u001b[0m tests/test_ok.py::\u001b[1mtest_b\u001b[0m - assert 2 == 3\n\u001b[31m\u001b[31m\u001b[1m1 failed\u001b[0m, \u001b[32m1 passed\u001b[0m\u001b[31m in 0.03s\u001b[0m\u001b[0m\n"
+}

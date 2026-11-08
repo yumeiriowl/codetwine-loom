@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "returncode": 1,
+ "output": "sF                                                                       [100%]\n=================================== FAILURES ===================================\n____________________________________ test_b ____________________________________\n\n    def test_b():\n>       assert 2 == 3\nE       assert 2 == 3\n\ntests/test_ok.py:10: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_ok.py::test_b - assert 2 == 3\n1 failed, 1 skipped in 0.01s\n"
+}

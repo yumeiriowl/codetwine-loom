@@ -1,0 +1,17 @@
+{
+ "command": [
+  "uv",
+  "run",
+  "--with",
+  "pytest",
+  "--with",
+  "pytest-asyncio",
+  "pytest",
+  "--asyncio-mode=auto",
+  "-q",
+  "-W",
+  "ignore:The configuration option \"asyncio_default_fixture_loop_scope\" is unset.:pytest.PytestDeprecationWarning"
+ ],
+ "returncode": 1,
+ "output": ".F                                                                       [100%]\n=================================== FAILURES ===================================\n___________________________________ test_bar ___________________________________\n\n    def test_bar():\n>       assert add(2, 2) == 5\nE       assert 4 == 5\nE        +  where 4 = add(2, 2)\n\ntests/test_foo.py:9: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_foo.py::test_bar - assert 4 == 5\n1 failed, 1 passed in 0.02s\n"
+}

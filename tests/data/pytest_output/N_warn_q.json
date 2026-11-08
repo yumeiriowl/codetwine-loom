@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "returncode": 5,
+ "output": "\n=============================== warnings summary ===============================\ntests/conftest.py:2\n  /fixture/tests/conftest.py:2: DeprecationWarning: old api\n    warnings.warn('old api', DeprecationWarning)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 warning in 0.00s\n"
+}

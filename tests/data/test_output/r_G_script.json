@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-r"
+ ],
+ "returncode": 0,
+ "output": "[ FAIL 0 | WARN 0 | SKIP 0 | PASS 1 ]\n"
+}

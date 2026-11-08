@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-c"
+ ],
+ "returncode": 1,
+ "output": "ctloom-test-c: there is no CMakeLists.txt in /fixture/cpp/X; set TEST_COMMAND to run the tests of a project built another way\n"
+}

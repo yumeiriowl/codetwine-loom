@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-c"
+ ],
+ "returncode": 0,
+ "output": "Internal ctest changing into directory: /tmp/ctloom-test-c-ninja-3110545515\nTest project /tmp/ctloom-test-c-ninja-3110545515\nNo tests were found!!!\n"
+}

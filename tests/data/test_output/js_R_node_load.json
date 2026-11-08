@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "TAP version 13\n# Subtest: adds\nok 1 - adds\n  ---\n  duration_ms: 1.334812\n  ...\n# node:internal/modules/esm/resolve:283\n#     throw new ERR_MODULE_NOT_FOUND(\n#           ^\n# Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/fixture/nowhere.js' imported from /fixture/test/broken.test.js\n#     at finalizeResolution (node:internal/modules/esm/resolve:283:11)\n#     at moduleResolve (node:internal/modules/esm/resolve:952:10)\n#     at defaultResolve (node:internal/modules/esm/resolve:1188:11)\n#     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:642:12)\n#     at \\#cachedDefaultResolve (node:internal/modules/esm/loader:591:25)\n#     at ModuleLoader.resolve (node:internal/modules/esm/loader:574:38)\n#     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:236:38)\n#     at ModuleJob._link (node:internal/modules/esm/module_job:130:49) {\n#   code: 'ERR_MODULE_NOT_FOUND',\n#   url: 'file:///fixture/nowhere.js'\n# }\n# Node.js v20.19.2\n# Subtest: /fixture/test/broken.test.js\nnot ok 2 - /fixture/test/broken.test.js\n  ---\n  duration_ms: 99.01614\n  location: '/fixture/test/broken.test.js:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 1\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 119.766525\n"
+}

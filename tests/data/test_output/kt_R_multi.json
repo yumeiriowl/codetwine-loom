@@ -1,0 +1,10 @@
+{
+ "command": [
+  "gradle",
+  "test",
+  "--continue",
+  "--console=plain"
+ ],
+ "returncode": 1,
+ "output": "> Task :a:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :a:processResources NO-SOURCE\n> Task :a:processTestResources NO-SOURCE\n> Task :b:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :b:processResources NO-SOURCE\n> Task :b:processTestResources NO-SOURCE\n> Task :c:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :c:processResources NO-SOURCE\n> Task :c:processTestResources NO-SOURCE\n> Task :a:compileKotlin\n> Task :a:compileJava NO-SOURCE\n> Task :a:classes UP-TO-DATE\n> Task :a:jar\n> Task :b:compileKotlin\n> Task :b:compileJava NO-SOURCE\n> Task :b:classes UP-TO-DATE\n> Task :b:jar\n> Task :a:compileTestKotlin\n> Task :a:compileTestJava NO-SOURCE\n> Task :a:testClasses UP-TO-DATE\n> Task :b:compileTestKotlin\n> Task :c:compileKotlin\n\n> Task :a:test FAILED\n\nATest > one() FAILED\n    org.opentest4j.AssertionFailedError at ATest.kt:7\n\n1 test completed, 1 failed\n\n> Task :b:compileTestJava NO-SOURCE\n> Task :b:testClasses UP-TO-DATE\n> Task :b:test\n> Task :c:compileJava NO-SOURCE\n> Task :c:classes UP-TO-DATE\n> Task :c:jar\n> Task :c:compileTestKotlin\n> Task :c:compileTestJava NO-SOURCE\n> Task :c:testClasses UP-TO-DATE\n> Task :c:test\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':a:test'.\n> There were failing tests. See the report at: file:///fixture/kt/R_multi/a/build/reports/tests/test/index.html\n\n* Try:\n> Run with --scan to get full insights.\n\nBUILD FAILED in 3s\n12 actionable tasks: 12 executed\n"
+}

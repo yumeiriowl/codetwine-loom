@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 0,
+ "output": "\n/fixture/js/L/calc.js\n  1:5  warning  'unused' is assigned a value but never used  no-unused-vars\n\n✖ 1 problem (0 errors, 1 warning)\n\n\n\n  calc\n    ✔ adds\n    ✔ adds again\n\n\n  2 passing (3ms)\n\n"
+}

@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "returncode": 5,
+ "output": "\n=============================== warnings summary ===============================\ntests/test_thing.py:1\n  /fixture/tests/test_thing.py:1: PytestCollectionWarning: cannot collect test class 'TestThing' because it has a __init__ constructor (from: tests/test_thing.py)\n    class TestThing:\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 warning in 0.00s\n"
+}

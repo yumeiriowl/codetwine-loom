@@ -1,0 +1,8 @@
+{
+ "command": [
+  "dotnet",
+  "test"
+ ],
+ "returncode": 8,
+ "output": "Running tests from /fixture/cs/MN/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (net10.0|x64)\n/fixture/cs/MN/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (net10.0|x64) Zero tests ran (187ms)\nExit code: 8\n\nTest run summary: Zero tests ran\n  error: 1\n\n  total: 0\n  failed: 0\n  succeeded: 0\n  skipped: 0\n  duration: 325ms\nTest run completed with non-success exit code: 8 (see: https://aka.ms/testingplatform/exitcodes)\n"
+}

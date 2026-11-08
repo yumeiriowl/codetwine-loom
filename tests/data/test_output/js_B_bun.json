@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "bun test v1.4.4 (38afee6c8)\n\ntest/calc.test.js:\n\n# Unhandled error between tests\n-------------------------------\n2 |   return a + ;\n                 ^\nerror: Unexpected ;\n    at /fixture/js/B_bun/src/calc.js:2:14\n-------------------------------\n\n\n 0 pass\n 1 fail\n 1 error\nRan 1 test across 1 file. [9.00ms]\n"
+}

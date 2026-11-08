@@ -1,0 +1,8 @@
+{
+ "command": [
+  "dotnet",
+  "test"
+ ],
+ "returncode": 0,
+ "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Calc -> /fixture/cs/G/src/Calc/bin/Debug/net10.0/Calc.dll\n  Calc.Tests -> /fixture/cs/G/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll\nTest run for /fixture/cs/G/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (.NETCoreApp,Version=v10.0)\nA total of 1 test files matched the specified pattern.\n\nPassed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 19 ms - Calc.Tests.dll (net10.0)\n"
+}

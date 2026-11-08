@@ -1,0 +1,10 @@
+{
+ "command": [
+  "cargo",
+  "test",
+  "--workspace",
+  "--no-fail-fast"
+ ],
+ "returncode": 0,
+ "output": "\nrunning 2 tests\ntest tests::adds ... ok\ntest tests::subtracts ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest add_then_sub ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n   Compiling calc v0.1.0 (/fixture/rs/G)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s\n     Running unittests src/lib.rs (target/debug/deps/calc-f3ab8b639f461af0)\n     Running tests/basic.rs (target/debug/deps/basic-379147870dde3f0a)\n   Doc-tests calc\n"
+}

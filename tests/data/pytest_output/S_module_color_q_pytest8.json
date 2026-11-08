@@ -1,0 +1,17 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "--color=yes",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "pytest": "8.4.2",
+ "returncode": 5,
+ "output": "\n\u001b[33m\u001b[33m\u001b[1m1 skipped\u001b[0m\u001b[33m in 0.00s\u001b[0m\u001b[0m\n"
+}

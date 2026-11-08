@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 0,
+ "output": "bun test v1.4.4 (38afee6c8)\n\ntest/calc.test.js:\n(pass) calc > adds [0.02ms]\n\n 1 pass\n 0 fail\n 1 expect() calls\nRan 1 test across 1 file. [29.00ms]\n"
+}

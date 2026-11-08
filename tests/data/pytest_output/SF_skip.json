@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "pytest": "9.1.1",
+ "returncode": 1,
+ "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0\nrootdir: /fixture\nplugins: anyio-4.14.2\ncollected 2 items\n\ntests/test_ok.py .                                                       [ 50%]\ntests/test_y.py us                                                       [100%]\n\n=================================== FAILURES ===================================\n_________________________________ test_y [a b] _________________________________\n\nsubtests = <_pytest.subtests.Subtests object at 0x7751b66e29c0>\n\n    def test_y(subtests):\n        with subtests.test(msg='a b'):\n>           assert 0\nE           assert 0\n\ntests/test_y.py:6: AssertionError\n=========================== short test summary info ============================\nSUBFAILED[a b] tests/test_y.py::test_y - assert 0\n==================== 1 failed, 1 passed, 1 skipped in 0.02s ====================\n"
+}

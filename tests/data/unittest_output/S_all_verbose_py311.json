@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests",
+  "-v"
+ ],
+ "python": "3.11.15",
+ "output": "test_add (test_calc.CalcTest.test_add) ... skipped 'later'\ntest_mul (test_calc.CalcTest.test_mul) ... skipped 'later'\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK (skipped=2)\n",
+ "returncode": 0
+}

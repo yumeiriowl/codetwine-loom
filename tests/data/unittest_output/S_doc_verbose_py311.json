@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests",
+  "-v"
+ ],
+ "python": "3.11.15",
+ "output": "test_add (test_calc.CalcTest.test_add) ... ok\ntest_mul (test_calc.CalcTest.test_mul) ... ok\ntest_add_table (test_table.TableTest.test_add_table)\nEach pair adds up. ... \n  test_add_table (test_table.TableTest.test_add_table) (a=0, b=0)\nEach pair adds up. ... skipped 'zero is checked elsewhere'\ntest_mul_table (test_table.TableTest.test_mul_table)\nEach pair multiplies. ... skipped 'later'\n\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nOK (skipped=2)\n",
+ "returncode": 0
+}

@@ -1,0 +1,8 @@
+{
+ "command": [
+  "dotnet",
+  "test"
+ ],
+ "returncode": 2,
+ "output": "Running tests from /fixture/cs/MR/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (net10.0|x64)\nfailed Calc.Tests.ScaleTests.Multiplies (15ms)\n  Assert.Equal() Failure: Values differ\nExpected: 7\nActual:   6\n  from /fixture/cs/MR/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (net10.0|x64)\n  Assert.Equal() Failure: Values differ\n  Expected: 7\n  Actual:   6\n    at Calc.Tests.ScaleTests.Multiplies() in /fixture/cs/MR/tests/Calc.Tests/ScaleTests.cs:8\n    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)\n    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)\n/fixture/cs/MR/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (net10.0|x64) failed with 1 error(s) (258ms)\nExit code: 2\n\nTest run summary: Failed!\n  total: 4\n  failed: 1\n  succeeded: 3\n  skipped: 0\n  duration: 388ms\nTest run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)\n"
+}

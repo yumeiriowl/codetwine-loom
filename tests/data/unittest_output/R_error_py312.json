@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "output": ".E.F\n======================================================================\nERROR: test_div (test_calc.CalcTest.test_div)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 17, in test_div\n    self.assertEqual(calc.div(6, 3), 2)\n                     ^^^^^^^^^^^^^^\n  File \"/fixture/calc.py\", line 14, in div\n    return a / 0\n           ~~^~~\nZeroDivisionError: division by zero\n\n======================================================================\nFAIL: test_sub (test_calc.CalcTest.test_sub)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 11, in test_sub\n    self.assertEqual(calc.sub(6, 3), 3)\nAssertionError: 0 != 3\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nFAILED (failures=1, errors=1)\n",
+ "returncode": 1
+}

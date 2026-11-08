@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-r"
+ ],
+ "returncode": 1,
+ "output": "[ FAIL 1 | WARN 0 | SKIP 0 | PASS 2 ]\n\n══ Failed tests ════════════════════════════════════════════════════════════════\n── Failure ('test-basic.R:6:3'): add is wrong here ─────────────────────────────\nadd(1, 2) (`actual`) not equal to 4 (`expected`).\n\n  `actual`: 3.0\n`expected`: 4.0\n\n[ FAIL 1 | WARN 0 | SKIP 0 | PASS 2 ]\nError: Test failures\nExecution halted\n"
+}

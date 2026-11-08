@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "\n\n  calc\n    ✔ adds\n    1) bar\n\n\n  1 passing (5ms)\n  1 failing\n\n  1) calc\n       bar:\n\n      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n4 !== 5\n\n      + expected - actual\n\n      -4\n      +5\n      \n      at Context.<anonymous> (test/calc.test.js:5:28)\n      at process.processImmediate (node:internal/timers:483:21)\n\n\n\n"
+}

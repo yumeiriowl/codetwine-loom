@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "output": "..FF\n======================================================================\nFAIL: test_mul (test_calc.CalcTest.test_mul)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 14, in test_mul\n    self.assertEqual(calc.mul(6, 3), 18)\nAssertionError: 0 != 18\n\n======================================================================\nFAIL: test_sub (test_calc.CalcTest.test_sub)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 11, in test_sub\n    self.assertEqual(calc.sub(6, 3), 3)\nAssertionError: 0 != 3\n\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nFAILED (failures=2)\n",
+ "returncode": 1
+}

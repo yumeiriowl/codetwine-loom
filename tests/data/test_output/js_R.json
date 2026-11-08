@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "FAIL test/foo.test.js\n  FooTest\n    \u2713 one (3 ms)\n    \u2715 bar (2 ms)\n\n  \u25cf FooTest \u203a bar\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: 5\n    Received: 4\n\n      3 | describe('FooTest', () => {\n      4 |   test('one', () => { expect(add(1, 1)).toBe(2); });\n    > 5 |   test('bar', () => { expect(add(2, 2)).toBe(5); });\n        |                                         ^\n      6 | });\n      7 |\n\n      at Object.toBe (test/foo.test.js:5:41)\n\nTest Suites: 1 failed, 1 total\nTests:       1 failed, 1 passed, 2 total\nSnapshots:   0 total\nTime:        0.42 s\nRan all test suites.\n"
+}

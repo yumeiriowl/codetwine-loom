@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-r"
+ ],
+ "returncode": 1,
+ "output": "ctloom-test-r: there is no tests/testthat in /fixture/r/X; set TEST_COMMAND to run the tests of a repository laid out another way\n"
+}

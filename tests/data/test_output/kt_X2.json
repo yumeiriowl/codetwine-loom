@@ -1,0 +1,10 @@
+{
+ "command": [
+  "gradle",
+  "test",
+  "--continue",
+  "--console=plain"
+ ],
+ "returncode": 1,
+ "output": "\nWelcome to Gradle 8.14.6!\n\nHere are the highlights of this release:\n - Java 24 support\n - GraalVM Native Image toolchain selection\n - Enhancements to test reporting\n - Build Authoring improvements\n\nFor more details see https://docs.gradle.org/8.14.6/release-notes.html\n\nStarting a Gradle Daemon (subsequent builds will be faster)\n\nFAILURE: Build failed with an exception.\n\n* Where:\nBuild file '/fixture/kt/X2/build.gradle.kts' line: 1\n\n* What went wrong:\nPlugin [id: 'org.jetbrains.kotlin.jvm', version: '2.0.21'] was not found in any of the following sources:\n\n- Gradle Core Plugins (plugin is not in 'org.gradle' namespace)\n- Included Builds (No included builds contain this plugin)\n- Plugin Repositories (could not resolve plugin artifact 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.0.21')\n  Searched in the following repositories:\n    Gradle Central Plugin Repository\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to get full insights.\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 18s\n"
+}

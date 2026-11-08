@@ -1,0 +1,10 @@
+{
+ "command": [
+  "cargo",
+  "test",
+  "--workspace",
+  "--no-fail-fast"
+ ],
+ "returncode": 0,
+ "output": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n   Compiling calc v0.1.0 (/fixture/rs/N)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s\n     Running unittests src/lib.rs (target/debug/deps/calc-f3ab8b639f461af0)\n   Doc-tests calc\n"
+}

@@ -1,0 +1,16 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "pytest": "9.1.1",
+ "returncode": 1,
+ "output": ".uuF                                                                     [100%]\n=================================== FAILURES ===================================\n_________________________________ test_y [a b] _________________________________\n\nsubtests = <_pytest.subtests.Subtests object at 0x743733529d60>\n\n    def test_y(subtests):\n        with subtests.test(msg='a b'):\n>           assert 0\nE           assert 0\n\ntests/test_y.py:6: AssertionError\n____________________________________ test_y ____________________________________\ncontains 1 failed subtest\n=========================== short test summary info ============================\nSUBFAILED[a b] tests/test_y.py::test_y - assert 0\nFAILED tests/test_y.py::test_y - contains 1 failed subtest\n2 failed, 1 passed, 1 subtests passed in 0.01s\n"
+}

@@ -1,0 +1,16 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "pytest": "8.4.2",
+ "returncode": 1,
+ "output": ".F                                                                       [100%]\n=================================== FAILURES ===================================\n___________________________________ T.test_y ___________________________________\n\nself = <test_y.T testMethod=test_y>\n\n    def test_y(self):\n        for i in range(3):\n            with self.subTest(i=i):\n>               self.assertNotIn(i, (1, 2))\nE               AssertionError: 1 unexpectedly found in (1, 2)\n\ntests/test_y.py:8: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_y.py::T::test_y - AssertionError: 1 unexpectedly found in (...\n1 failed, 1 passed in 0.01s\n"
+}

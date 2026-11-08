@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-c"
+ ],
+ "returncode": 8,
+ "output": "Internal ctest changing into directory: /tmp/ctloom-test-c-ninja-2907321919\nTest project /tmp/ctloom-test-c-ninja-2907321919\n    Start 1: FooTest.one\n1/2 Test #1: FooTest.one ......................   Passed    0.00 sec\n    Start 2: FooTest.bar\n2/2 Test #2: FooTest.bar ......................***Failed    0.00 sec\nmul(2, 3) != 6\n\n\n50% tests passed, 1 tests failed out of 2\n\nTotal Test time (real) =   0.00 sec\n\nThe following tests FAILED:\n\t  2 - FooTest.bar (Failed)\nErrors while running CTest\n"
+}

@@ -1,0 +1,10 @@
+{
+ "command": [
+  "cargo",
+  "test",
+  "--workspace",
+  "--no-fail-fast"
+ ],
+ "returncode": 101,
+ "output": "error: could not find `Cargo.toml` in `/fixture/rs/X` or any parent directory\n"
+}

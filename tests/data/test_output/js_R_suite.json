@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "FAIL test/a.test.js\n  \u25cf FooTest \u203a bar\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: 5\n    Received: 4\n\n      1 | describe('FooTest', () => {\n      2 |   test('one', () => { expect(1 + 1).toBe(2); });\n    > 3 |   test('bar', () => { expect(2 + 2).toBe(5); });\n        |                                     ^\n      4 | });\n      5 |\n\n      at Object.toBe (test/a.test.js:3:37)\n\nFAIL test/b.test.js\n  \u25cf Test suite failed to run\n\n    Cannot find module './missing_helper' from 'test/b.test.js'\n\n    > 1 | const helper = require('./missing_helper');\n        |                                           ^\n      2 | test('uses the helper', () => { expect(helper).toBe(1); });\n      3 |\n\n      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)\n      at Object.<anonymous> (test/b.test.js:1:43)\n\nTest Suites: 2 failed, 2 total\nTests:       1 failed, 1 passed, 2 total\nSnapshots:   0 total\nTime:        0.502 s, estimated 1 s\nRan all test suites.\n"
+}

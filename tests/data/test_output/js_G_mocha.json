@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 0,
+ "output": "\n\n  calc\n    ✔ adds\n    ✔ adds again\n\n\n  2 passing (5ms)\n\n"
+}

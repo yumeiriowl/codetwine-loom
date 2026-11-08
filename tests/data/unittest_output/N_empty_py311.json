@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "output": "\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+ "returncode": 0
+}

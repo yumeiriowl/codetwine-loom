@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-r"
+ ],
+ "returncode": 1,
+ "output": "[ FAIL 1 | WARN 0 | SKIP 0 | PASS 0 ]\n\n══ Failed tests ════════════════════════════════════════════════════════════════\n── Error ('test-basic.R:1:1'): (code run outside of `test_that()`) ─────────────\nError in `source(\"../../basic.R\")`: ../../basic.R:3:1: unexpected '}'\n2:   a +\n3: }\n   ^\nBacktrace:\n    ▆\n 1. └─base::source(\"../../basic.R\") at test-basic.R:1:1\n\n[ FAIL 1 | WARN 0 | SKIP 0 | PASS 0 ]\nError: Test failures\nExecution halted\n"
+}

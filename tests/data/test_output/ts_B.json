@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "FAIL test/foo.test.ts\n  \u25cf Test suite failed to run\n\n    \u001b[96mm.ts\u001b[0m:\u001b[93m1\u001b[0m:\u001b[93m53\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2322: \u001b[0mType 'number' is not assignable to type 'string'.\n\n    \u001b[7m1\u001b[0m export function add(a: number, b: number): string { return a + b; }\n    \u001b[7m \u001b[0m \u001b[91m                                                    ~~~~~~\u001b[0m\n\nTest Suites: 1 failed, 1 total\nTests:       0 total\nSnapshots:   0 total\nTime:        1.853 s\nRan all test suites.\n"
+}

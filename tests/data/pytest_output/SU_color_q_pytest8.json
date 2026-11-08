@@ -1,0 +1,17 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "--color=yes",
+  "tests"
+ ],
+ "python": "3.11.15",
+ "pytest": "8.4.2",
+ "returncode": 1,
+ "output": "\u001b[32m.\u001b[0m\u001b[31mF\u001b[0m\u001b[31m                                                                       [100%]\u001b[0m\n=================================== FAILURES ===================================\n\u001b[31m\u001b[1m___________________________________ T.test_y ___________________________________\u001b[0m\n\nself = <test_y.T testMethod=test_y>\n\n    \u001b[0m\u001b[94mdef\u001b[39;49;00m\u001b[90m \u001b[39;49;00m\u001b[92mtest_y\u001b[39;49;00m(\u001b[96mself\u001b[39;49;00m):\u001b[90m\u001b[39;49;00m\n        \u001b[94mfor\u001b[39;49;00m i \u001b[95min\u001b[39;49;00m \u001b[96mrange\u001b[39;49;00m(\u001b[94m3\u001b[39;49;00m):\u001b[90m\u001b[39;49;00m\n            \u001b[94mwith\u001b[39;49;00m \u001b[96mself\u001b[39;49;00m.subTest(i=i):\u001b[90m\u001b[39;49;00m\n>               \u001b[96mself\u001b[39;49;00m.assertNotIn(i, (\u001b[94m1\u001b[39;49;00m,))\u001b[90m\u001b[39;49;00m\n\u001b[1m\u001b[31mE               AssertionError: 1 unexpectedly found in (1,)\u001b[0m\n\n\u001b[1m\u001b[31mtests/test_y.py\u001b[0m:8: AssertionError\n\u001b[36m\u001b[1m=========================== short test summary info ============================\u001b[0m\n\u001b[31mFAILED\u001b[0m tests/test_y.py::\u001b[1mT::test_y\u001b[0m - AssertionError: 1 unexpectedly found in (1,)\n\u001b[31m\u001b[31m\u001b[1m1 failed\u001b[0m, \u001b[32m1 passed\u001b[0m\u001b[31m in 0.03s\u001b[0m\u001b[0m\n"
+}

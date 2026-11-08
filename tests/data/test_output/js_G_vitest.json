@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 0,
+ "output": "\n RUN  v1.3.0 /fixture/js/G\n\n ✓ test/calc.test.js  (2 tests) 2ms\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  16:48:00\n   Duration  431ms (transform 22ms, setup 0ms, collect 12ms, tests 2ms, environment 0ms, prepare 104ms)\n\n"
+}

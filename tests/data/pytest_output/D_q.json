@@ -1,0 +1,17 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-q",
+  "-p",
+  "no:cacheprovider",
+  "-k",
+  "nothing_named_so",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "returncode": 5,
+ "output": "\n2 deselected in 0.00s\n"
+}

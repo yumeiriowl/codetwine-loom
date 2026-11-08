@@ -1,0 +1,8 @@
+{
+ "command": [
+  "dotnet",
+  "test"
+ ],
+ "returncode": 1,
+ "output": "/fixture/cs/MB/tests/Calc.Tests/BasicTests.cs(14,25): error CS0117: 'Ops' does not contain a definition for 'Addd' [/fixture/cs/MB/tests/Calc.Tests/Calc.Tests.csproj]\nBuild failed with exit code: 1.\n"
+}

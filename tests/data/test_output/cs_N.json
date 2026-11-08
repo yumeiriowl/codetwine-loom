@@ -1,0 +1,8 @@
+{
+ "command": [
+  "dotnet",
+  "test"
+ ],
+ "returncode": 0,
+ "output": "  Determining projects to restore...\n  All projects are up-to-date for restore.\n  Calc -> /fixture/cs/N/src/Calc/bin/Debug/net10.0/Calc.dll\n  Calc.Tests -> /fixture/cs/N/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll\nTest run for /fixture/cs/N/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll (.NETCoreApp,Version=v10.0)\nA total of 1 test files matched the specified pattern.\nNo test is available in /fixture/cs/N/tests/Calc.Tests/bin/Debug/net10.0/Calc.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.\n\n"
+}

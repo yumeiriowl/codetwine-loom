@@ -1,0 +1,10 @@
+{
+ "command": [
+  "gradle",
+  "test",
+  "--continue",
+  "--console=plain"
+ ],
+ "returncode": 1,
+ "output": "> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :processResources NO-SOURCE\n> Task :processTestResources NO-SOURCE\n> Task :compileKotlin\n> Task :compileJava NO-SOURCE\n> Task :classes UP-TO-DATE\n> Task :jar\n> Task :compileTestKotlin\n> Task :compileTestJava NO-SOURCE\n> Task :testClasses UP-TO-DATE\n\n> Task :test FAILED\n\nFooTest > adds two numbers() FAILED\n    org.opentest4j.AssertionFailedError at FooTest.kt:14\n\nFooTest > bar() FAILED\n    org.opentest4j.AssertionFailedError at FooTest.kt:11\n\nFooTest > doubles(int) > [2] 2 FAILED\n    org.opentest4j.AssertionFailedError at FooTest.kt:19\n\nFooTest > Inner > deep() FAILED\n    org.opentest4j.AssertionFailedError at FooTest.kt:23\n\n7 tests completed, 4 failed\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':test'.\n> There were failing tests. See the report at: file:///fixture/kt/R_name/build/reports/tests/test/index.html\n\n* Try:\n> Run with --scan to get full insights.\n\nBUILD FAILED in 1s\n4 actionable tasks: 4 executed\n"
+}

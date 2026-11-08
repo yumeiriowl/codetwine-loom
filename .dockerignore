@@ -1,0 +1,16 @@
+# The build context holds only the Dockerfile, this file and what the Dockerfile copies
+*
+!Dockerfile
+!.dockerignore
+!pyproject.toml
+!uv.lock
+!uv.toml
+!codetwine_loom
+!sandbox
+
+# Left out of what is copied
+**/__pycache__/
+**/*.pyc
+**/.ruff_cache/
+**/.pytest_cache/
+**/.env

@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-r"
+ ],
+ "returncode": 1,
+ "output": "ctloom-test-r: these packages are not installed and could not be installed: cowsay\n"
+}

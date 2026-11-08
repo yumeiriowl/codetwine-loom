@@ -1,0 +1,10 @@
+{
+ "command": [
+  "gradle",
+  "test",
+  "--continue",
+  "--console=plain"
+ ],
+ "returncode": 1,
+ "output": "> Task :a:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :a:processResources NO-SOURCE\n> Task :a:processTestResources NO-SOURCE\n> Task :b:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :b:processResources NO-SOURCE\n> Task :b:processTestResources NO-SOURCE\n> Task :c:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :c:processResources NO-SOURCE\n> Task :c:processTestResources NO-SOURCE\n\n> Task :a:compileKotlin FAILED\ne: file:///fixture/kt/B_multi/a/src/main/kotlin/com/example/a/A.kt:3:18 Return type mismatch: expected 'kotlin.Int', actual 'kotlin.String'.\n\n> Task :b:compileKotlin\n> Task :b:compileJava NO-SOURCE\n> Task :b:classes UP-TO-DATE\n> Task :b:jar\n> Task :b:compileTestKotlin\n> Task :b:compileTestJava NO-SOURCE\n> Task :b:testClasses UP-TO-DATE\n\n> Task :b:test FAILED\n\nBTest > one() FAILED\n    org.opentest4j.AssertionFailedError at BTest.kt:7\n\n1 test completed, 1 failed\n\nFAILURE: Build completed with 2 failures.\n\n1: Task failed with an exception.\n-----------\n* What went wrong:\nExecution failed for task ':a:compileKotlin'.\n> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction\n   > Compilation error. See log for more details\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to get full insights.\n> Get more help at https://help.gradle.org.\n==============================================================================\n\n2: Task failed with an exception.\n-----------\n* What went wrong:\nExecution failed for task ':b:test'.\n> There were failing tests. See the report at: file:///fixture/kt/B_multi/b/build/reports/tests/test/index.html\n\n* Try:\n> Run with --scan to get full insights.\n==============================================================================\n\nBUILD FAILED in 1s\n5 actionable tasks: 5 executed\n"
+}

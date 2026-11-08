@@ -1,0 +1,16 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-p",
+  "no:cacheprovider",
+  "--color=yes",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "pytest": "9.1.1",
+ "returncode": 0,
+ "output": "\u001b[1m============================= test session starts ==============================\u001b[0m\nplatform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0\nrootdir: /fixture\nplugins: anyio-4.14.2\ncollected 1 item\n\ntests/test_ok.py \u001b[32m.\u001b[0m\u001b[32m                                                       [100%]\u001b[0m\n\n\u001b[32m============================== \u001b[32m\u001b[1m1 passed\u001b[0m\u001b[32m in 0.00s\u001b[0m\u001b[32m ===============================\u001b[0m\n"
+}

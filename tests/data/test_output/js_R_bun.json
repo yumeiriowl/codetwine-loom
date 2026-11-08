@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "bun test v1.4.4 (38afee6c8)\n\ntest/calc.test.js:\n(pass) calc > adds [0.11ms]\n3 | describe(\"calc\", () => {\n4 |   test(\"adds\", () => {\n5 |     expect(add(2, 2)).toBe(4);\n6 |   });\n7 |   test(\"bar\", () => {\n8 |     expect(add(2, 2)).toBe(5);\n                          ^\nerror: expect(received).toBe(expected)\n\nExpected: 5\nReceived: 4\n\n      at <anonymous> (/fixture/js/R_bun/test/calc.test.js:8:23)\n(fail) calc > bar [3.77ms]\n\n 1 pass\n 1 fail\n 2 expect() calls\nRan 2 tests across 1 file. [7.00ms]\n"
+}

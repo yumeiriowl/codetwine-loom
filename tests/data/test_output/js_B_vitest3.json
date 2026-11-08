@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "\n RUN  v3.2.4 /fixture/js/B\n\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/calc.test.js [ test/calc.test.js ]\nRollupError: Parse failure: Expression expected\nAt file: /calc.js:1:39\n  File: /calc.js:1:39\n  1  |  export function add(a, b) { return a + ; }\n     |                                         ^\n  2  |  \n ❯ getRollupError ../../../app/node_modules/rollup/dist/es/shared/parseAst.js:337:41\n ❯ convertProgram ../../../app/node_modules/rollup/dist/es/shared/parseAst.js:1161:26\n ❯ parseAstAsync ../../../app/node_modules/rollup/dist/es/shared/parseAst.js:2151:106\n ❯ ssrTransformScript ../../../app/node_modules/vite/dist/node/chunks/config.js:15615:9\n ❯ loadAndTransform ../../../app/node_modules/vite/dist/node/chunks/config.js:22945:64\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n Test Files  1 failed (1)\n      Tests  no tests\n   Start at  16:56:06\n   Duration  543ms (transform 33ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 127ms)\n\n"
+}

@@ -1,0 +1,17 @@
+{
+ "command": [
+  "uv",
+  "run",
+  "--with",
+  "pytest",
+  "--with",
+  "pytest-asyncio",
+  "pytest",
+  "--asyncio-mode=auto",
+  "-q",
+  "-W",
+  "ignore:The configuration option \"asyncio_default_fixture_loop_scope\" is unset.:pytest.PytestDeprecationWarning"
+ ],
+ "returncode": 5,
+ "output": "\nno tests ran in 0.00s\n"
+}

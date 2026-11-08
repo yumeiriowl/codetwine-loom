@@ -1,0 +1,10 @@
+{
+ "command": [
+  "gradle",
+  "test",
+  "--continue",
+  "--console=plain"
+ ],
+ "returncode": 1,
+ "output": "> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :processResources NO-SOURCE\n> Task :processTestResources NO-SOURCE\n\n> Task :compileKotlin FAILED\ne: file:///fixture/kt/B/src/main/kotlin/com/example/Foo.kt:3:35 Syntax error: Expecting an element.\ne: file:///fixture/kt/B/src/main/kotlin/com/example/Foo.kt:3:35 Syntax error: Expecting a top level declaration.\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':compileKotlin'.\n> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction\n   > Compilation error. See log for more details\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to get full insights.\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 989ms\n1 actionable task: 1 executed\n"
+}

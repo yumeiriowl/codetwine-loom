@@ -1,0 +1,11 @@
+# Index and knowledge files
+out/
+
+# Credentials
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/

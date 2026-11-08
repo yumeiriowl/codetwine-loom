@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "pytest",
+  "-p",
+  "no:cacheprovider",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "returncode": 5,
+ "output": "============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0\nrootdir: /fixture\nplugins: anyio-4.14.2\ncollected 0 items\n\n=============================== warnings summary ===============================\ntests/conftest.py:2\n  /fixture/tests/conftest.py:2: DeprecationWarning: old api\n    warnings.warn('old api', DeprecationWarning)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n============================== 1 warning in 0.00s ==============================\n"
+}

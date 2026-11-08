@@ -1,0 +1,15 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests",
+  "-v"
+ ],
+ "python": "3.12.3",
+ "output": "test_add (test_calc.CalcTest.test_add) ... ok\ntest_mul (test_calc.CalcTest.test_mul) ... ok\nsetUpClass (test_db1.Db1Test) ... skipped 'no database here'\nsetUpModule (test_net) ... skipped 'no network here'\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK (skipped=2)\n",
+ "returncode": 0
+}

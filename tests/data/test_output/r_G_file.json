@@ -1,0 +1,7 @@
+{
+ "command": [
+  "ctloom-test-r"
+ ],
+ "returncode": 0,
+ "output": "[ FAIL 0 | WARN 0 | SKIP 0 | PASS 2 ]\n[ FAIL 0 | WARN 0 | SKIP 1 | PASS 0 ]\n\n══ Skipped tests (1) ═══════════════════════════════════════════════════════════\n• empty test (1): 'test-empty.R:1:1'\n\n[ FAIL 0 | WARN 0 | SKIP 1 | PASS 0 ]\n"
+}

@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "\n RUN  v3.2.4 /fixture/js/R\n\n ❯ test/calc.test.js (2 tests | 1 failed) 9ms\n   ✓ calc > adds 1ms\n   × calc > bar 7ms\n     → expected 4 to be 5 // Object.is equality\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/calc.test.js > calc > bar\nAssertionError: expected 4 to be 5 // Object.is equality\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[32m- 5\u001b[39m\n\u001b[31m+ 4\u001b[39m\n\n ❯ test/calc.test.js:5:41\n      3| describe('calc', () => {\n      4|   test('adds', () => { expect(add(1, 1)).toBe(2); });\n      5|   test('bar', () => { expect(add(2, 2)).toBe(5); });\n       |                                         ^\n      6| });\n      7| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n Test Files  1 failed (1)\n      Tests  1 failed | 1 passed (2)\n   Start at  16:56:04\n   Duration  527ms (transform 57ms, setup 0ms, collect 26ms, tests 9ms, environment 0ms, prepare 144ms)\n\n"
+}

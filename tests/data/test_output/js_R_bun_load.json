@@ -1,0 +1,9 @@
+{
+ "command": [
+  "npm",
+  "test",
+  "--silent"
+ ],
+ "returncode": 1,
+ "output": "bun test v1.4.4 (38afee6c8)\n\ntest/calc.test.js:\n(pass) calc > adds [0.03ms]\n\ntest/gone.test.js:\n\n# Unhandled error between tests\n-------------------------------\nerror: Cannot find module '../src/gone.js' from '/fixture/js/R_bun_load/test/gone.test.js'\n-------------------------------\n\n\n 1 pass\n 1 fail\n 1 error\n 1 expect() calls\nRan 2 tests across 2 files. [4.00ms]\n"
+}

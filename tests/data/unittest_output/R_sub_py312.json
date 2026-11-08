@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "output": "....F\n======================================================================\nFAIL: test_sub_table (test_calc.TableTest.test_sub_table) (left=2, right=7)\nSubtracts each pair of the table.\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 25, in test_sub_table\n    self.assertEqual(calc.sub(left, right), left - right)\nAssertionError: 0 != -5\n\n----------------------------------------------------------------------\nRan 5 tests in 0.000s\n\nFAILED (failures=1)\n",
+ "returncode": 1
+}

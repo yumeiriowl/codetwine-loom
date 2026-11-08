@@ -1,0 +1,14 @@
+{
+ "command": [
+  "python",
+  "-B",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "python": "3.12.3",
+ "output": "FF\n======================================================================\nFAIL: test_table (test_calc.EachTest.test_table) [the table] (i=0)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 15, in test_table\n    self.assertEqual(calc.sub(a, b), want)\nAssertionError: 3 != -1\n\n======================================================================\nFAIL: test_table (test_calc.EachTest.test_table) [the table] (i=1)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/fixture/tests/test_calc.py\", line 15, in test_table\n    self.assertEqual(calc.sub(a, b), want)\nAssertionError: 8 != 2\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=2)\n",
+ "returncode": 1
+}

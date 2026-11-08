@@ -1,0 +1,10 @@
+{
+ "command": [
+  "gradle",
+  "test",
+  "--continue",
+  "--console=plain"
+ ],
+ "returncode": 0,
+ "output": "> Task :a:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :a:processResources NO-SOURCE\n> Task :a:processTestResources NO-SOURCE\n> Task :b:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :b:processResources NO-SOURCE\n> Task :b:processTestResources NO-SOURCE\n> Task :c:checkKotlinGradlePluginConfigurationErrors SKIPPED\n> Task :c:processResources NO-SOURCE\n> Task :c:processTestResources NO-SOURCE\n> Task :a:compileKotlin\n> Task :a:compileJava NO-SOURCE\n> Task :a:classes UP-TO-DATE\n> Task :a:jar\n> Task :b:compileKotlin\n> Task :b:compileJava NO-SOURCE\n> Task :b:classes UP-TO-DATE\n> Task :b:jar\n> Task :c:compileKotlin\n> Task :a:compileTestKotlin\n> Task :c:compileJava NO-SOURCE\n> Task :a:compileTestJava NO-SOURCE\n> Task :a:testClasses UP-TO-DATE\n> Task :b:compileTestKotlin\n> Task :a:test\n> Task :b:compileTestJava NO-SOURCE\n> Task :b:testClasses UP-TO-DATE\n> Task :b:test\n> Task :c:classes UP-TO-DATE\n> Task :c:jar\n> Task :c:compileTestKotlin NO-SOURCE\n> Task :c:compileTestJava NO-SOURCE\n> Task :c:testClasses UP-TO-DATE\n> Task :c:test NO-SOURCE\n\nBUILD SUCCESSFUL in 3s\n10 actionable tasks: 10 executed\n"
+}
