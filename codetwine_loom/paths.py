@@ -74,28 +74,6 @@ def repo_to_knowledge(repo_path: str, project_name: str) -> str:
     return f"{project_name}/{rel_to_copy_path(repo_path)}"
 
 
-def to_repo_path(path: str, project_name: str) -> str:
-    """Convert to a repository-relative path, but only for a knowledge path.
-
-    A path knowledge_to_repo() refuses comes back unchanged.
-
-    Examples:
-        "myapp/myapp/config/settings_py/settings.py" -> "myapp/config/settings.py"
-        "myapp/config/settings.py"                   -> "myapp/config/settings.py"
-
-    Args:
-        path: A repository-relative path or a knowledge path.
-        project_name: The directory name of PROJECT_DIR.
-
-    Returns:
-        A repository-relative path; the argument unchanged when it already is one.
-    """
-    try:
-        return knowledge_to_repo(path, project_name)
-    except ValueError:
-        return path
-
-
 # The variable that names to a run in a container where the target repository is on the
 # machine that started it, one absolute path per line (host_path_of)
 HOST_PROJECT_ENV = "CTLOOM_HOST_PROJECT"

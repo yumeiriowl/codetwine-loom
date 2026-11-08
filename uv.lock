@@ -419,7 +419,7 @@ wheels = [
 [[package]]
 name = "codetwine"
 version = "0.5.1"
-source = { git = "https://github.com/yumeiriowl/codetwine.git#f8c0d5594973f3acdd1e07ff0f71c0f75f338107" }
+source = { git = "https://github.com/yumeiriowl/codetwine.git#d6cf032719b4daca686fb805c115ecab3e7429f1" }
 dependencies = [
     { name = "charset-normalizer" },
     { name = "litellm" },

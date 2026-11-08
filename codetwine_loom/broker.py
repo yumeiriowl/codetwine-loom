@@ -65,9 +65,8 @@ _NO_LIMIT_TUPLE = (COMPLETION,)
 LOCAL_MODEL_TABLE_ENV = providercall.LOCAL_MODEL_TABLE_ENV
 MODEL_TABLE_ENV = "CTLOOM_MODEL_TABLE"
 
-# The two forms config.LLM_BROKER takes
+# The form of config.LLM_BROKER that names a Unix socket
 UNIX_SCHEME = config.BROKER_UNIX_SCHEME
-TCP_SCHEME = config.BROKER_TCP_SCHEME
 
 # The arguments a completion request may carry. A request carrying any other name is
 # refused before the provider is called; api_key and api_base are the broker's own to
