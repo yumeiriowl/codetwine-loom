@@ -15,6 +15,7 @@ A command-line tool that changes code from a request written in plain language, 
   - [1. Installation](#1-installation)
   - [2. Configuration](#2-configuration)
   - [3. Usage](#3-usage)
+- [🤖 Using it from a coding agent](#-using-it-from-a-coding-agent)
 - [📖 Subcommands](#-subcommands)
 - [⚙️ Settings](#️-settings)
   - [The minimal settings and `PRESET`](#the-minimal-settings-and-preset)
@@ -23,7 +24,6 @@ A command-line tool that changes code from a request written in plain language, 
 - [📁 Output files](#-output-files)
 - [🐳 Running in containers](#-running-in-containers)
 - [🐍 Using it as a library](#-using-it-as-a-library)
-- [🤖 Using it from a coding agent](#-using-it-from-a-coding-agent)
 - [⚠️ Limitations and notes](#️-limitations-and-notes)
 - [🏗️ Project structure](#️-project-structure)
 - [🙏 Acknowledgments](#-acknowledgments)
@@ -84,6 +84,9 @@ codetwine-loom sandbox --project /path/to/repo --output-dir ./out \
 codetwine-loom run --project /path/to/repo --output-dir ./out \
   --request "Tidy up how the settings are loaded, and update the callers to match"
 
+# Read the request from a file (Markdown is fine; - reads the standard input)
+codetwine-loom run --project /path/to/repo --output-dir ./out --request-file request.md
+
 # Carry on from an earlier run (its last line prints the names to pass)
 codetwine-loom run --project /path/to/repo --output-dir ./out \
   --resume codetwine-loom/run/20260906-184500-1-1234/1
@@ -93,6 +96,31 @@ codetwine-loom history --project /path/to/repo --output-dir ./out
 ```
 
 A successful run applies its change to the working tree and commits nothing; `HEAD` and the branch do not move. Check the change with `git diff` and commit it yourself. The last line of the output is a command that takes the change back out ([example output](docs/usage.md#running-in-the-sandbox)).
+
+## 🤖 Using it from a coding agent
+
+`skills/codetwine-loom/` is an [Agent Skill](https://agentskills.io): a `SKILL.md` with `name` / `description` front matter, with the details in `references/`. A coding agent that has it can install and configure this tool, build the container image, run requests, read the results, carry on from failed runs and write the [instruction files](docs/settings.md#the-instruction-files-for-changes-codetwine_loommd).
+
+Copy it into the personal skills directory of your agent:
+
+```bash
+git clone https://github.com/yumeiriowl/codetwine-loom.git
+
+# Claude Code
+mkdir -p ~/.claude/skills && cp -r codetwine-loom/skills/codetwine-loom ~/.claude/skills/
+
+# GitHub Copilot (VS Code agent mode, Copilot CLI)
+mkdir -p ~/.copilot/skills && cp -r codetwine-loom/skills/codetwine-loom ~/.copilot/skills/
+```
+
+| Agent | Personal skills directory | Project skills directory |
+|------|------|------|
+| Claude Code | `~/.claude/skills/` | `.claude/skills/` |
+| GitHub Copilot (VS Code agent mode, Copilot CLI) | `~/.copilot/skills/` or `~/.agents/skills/` | `.github/skills/`, `.claude/skills/` or `.agents/skills/` |
+| GitHub Copilot cloud agent | None; it uses only the skills committed to the repository | `.github/skills/`, `.claude/skills/` or `.agents/skills/` |
+| Other agents that read Agent Skills | Their personal skills directory | Their project skills directory |
+
+For codetwine-loom, a skill in a project skills directory of the target repository is part of that repository: runs copy it and can change it like any other file. Use the personal directory unless the repository is meant to hold the skill. Start a new session of the agent after copying (`/reload-skills` in Claude Code and `/skills reload` in Copilot CLI load it in the current one), then ask it to use codetwine-loom.
 
 ## 📖 Subcommands
 
@@ -227,31 +255,6 @@ result["answer"]           # the argument of COMPLETE(). None when the limit was
 ```
 
 Set all 5 values (`config.PROJECT_DIR`, `config.OUTPUT_DIR`, `load_index()`, `source.set_project_data()`, `source.project_name`) before `search_scope()`; without them the search fails. Call `create_agent()` after `load_index()`. The return value is described in [docs/output.md](docs/output.md#return-value-of-search_scope).
-
-## 🤖 Using it from a coding agent
-
-`skills/codetwine-loom/` is an [Agent Skill](https://agentskills.io): a `SKILL.md` with `name` / `description` front matter, with the details in `references/`. A coding agent that has it can install and configure this tool, build the container image, run requests, read the results, carry on from failed runs and write the instruction files.
-
-Copy it into the personal skills directory of your agent:
-
-```bash
-git clone https://github.com/yumeiriowl/codetwine-loom.git
-
-# Claude Code
-mkdir -p ~/.claude/skills && cp -r codetwine-loom/skills/codetwine-loom ~/.claude/skills/
-
-# GitHub Copilot (VS Code agent mode, Copilot CLI)
-mkdir -p ~/.copilot/skills && cp -r codetwine-loom/skills/codetwine-loom ~/.copilot/skills/
-```
-
-| Agent | Personal skills directory | Project skills directory |
-|------|------|------|
-| Claude Code | `~/.claude/skills/` | `.claude/skills/` |
-| GitHub Copilot (VS Code agent mode, Copilot CLI) | `~/.copilot/skills/` or `~/.agents/skills/` | `.github/skills/`, `.claude/skills/` or `.agents/skills/` |
-| GitHub Copilot cloud agent | None; it uses only the skills committed to the repository | `.github/skills/`, `.claude/skills/` or `.agents/skills/` |
-| Other agents that read Agent Skills | Their personal skills directory | Their project skills directory |
-
-For codetwine-loom, a skill in a project skills directory of the target repository is part of that repository: runs copy it and can change it like any other file. Use the personal directory unless the repository is meant to hold the skill. Start a new session of the agent after copying (`/reload-skills` in Claude Code and `/skills reload` in Copilot CLI load it in the current one), then ask it to use codetwine-loom.
 
 ## ⚠️ Limitations and notes
 
