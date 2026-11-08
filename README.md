@@ -277,6 +277,7 @@ The limits ordinary use runs into. The full list, including the limits per langu
 
 ```text
 codetwine-loom/
+├── CHANGELOG.md
 ├── pyproject.toml
 ├── uv.lock                  # locked dependency versions (for .venv and the image)
 ├── uv.toml                  # uv settings (a 1-day waiting period for new versions)
