@@ -95,7 +95,7 @@ Build it (TOOLCHAIN=c cbl cs java js kt r rs ts) with:
   podman build ... --label io.codetwine-loom.source=<hash> ... -t codetwine-loom <clone>
 ```
 
-Run that printed command as it is (tell the user first: it fetches packages over the network, uses several GB of disk, and can take up to an hour, so run it in the background or with a long timeout). Do not drop the `--label`, or the image counts as stale. A stale image (after upgrading codetwine-loom or codetwine) is used with a warning that prints the same kind of command; rebuild with it before a run whose result matters.
+Run that printed command as it is (tell the user first: it fetches packages over the network, uses several GB of disk, and takes a few minutes, longer on a slow network, so run it in the background or with a long timeout). Do not drop the `--label`, or the image counts as stale. A stale image (after upgrading codetwine-loom or codetwine) is used with a warning that prints the same kind of command; rebuild with it before a run whose result matters.
 
 - The engine is `podman`, then `docker`. Force one with `CONTAINER_ENGINE=docker` (or `--engine docker`).
 - To build a smaller image with some languages only: `podman build --build-arg TOOLCHAIN="java ts" -t codetwine-loom-java-ts <clone>` and pass `--image codetwine-loom-java-ts`. Languages it lacks cannot be tested in it. An image built this way lacks the tool's source label, so runs report it as stale; the rebuild command they print keeps the same `TOOLCHAIN`, and running it clears the warning.

@@ -51,7 +51,7 @@ source .venv/bin/activate     # or call .venv/bin/codetwine-loom directly
 
 Keep the target repository outside this repository. Installing with plain pip and following codetwine to its latest commit are described in [docs/usage.md](docs/usage.md#installation).
 
-The commands that start containers use the image `codetwine-loom`, which holds the toolchains of every language. When it is missing or stale, the first command that needs it offers to build it (this takes a few minutes and needs a network).
+The commands that start containers use the image `codetwine-loom`, which holds the toolchains of every language. When it is missing or stale, the first command that needs it offers to build it (this takes a few minutes, needs a network and uses several GB of disk).
 
 ### 2. Configuration
 
