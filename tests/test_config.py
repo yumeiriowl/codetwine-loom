@@ -1898,13 +1898,13 @@ def test_the_shell_s_environment_leaves_out_what_config_wrote_for_itself(monkeyp
 
 def test_a_question_line_goes_to_the_setting_below_it(monkeypatch, tmp_path):
     template = tmp_path / ".env.example"
-    template.write_text("# about A\n#? y=false Limit it?\n# A=true\n\n# about B\n# B=1\n",
+    template.write_text("# about A\n#? n=false Limit it?\n# A=true\n\n# about B\n# B=1\n",
                         encoding="utf-8")
     monkeypatch.setattr(config, "ENV_TEMPLATE_PATH", str(template))
     first, second = config.env_template_entry_list()
     assert (first.name, first.value, first.help_list) == ("A", "true", ["about A"])
-    assert (first.question, first.yes_value) == ("Limit it?", "false")
-    assert (second.name, second.question, second.yes_value) == ("B", "", "")
+    assert (first.question, first.no_value) == ("Limit it?", "false")
+    assert (second.name, second.question, second.no_value) == ("B", "", "")
 
 
 def test_a_skip_line_keeps_the_setting_below_it_from_being_asked(monkeypatch, tmp_path):
@@ -1926,7 +1926,7 @@ def test_the_design_document_settings_are_in_the_template_and_not_asked():
 def test_the_template_asks_for_the_refill_with_a_question(monkeypatch):
     by_name = {entry.name: entry for entry in config.env_template_entry_list()}
     entry = by_name["WARM_MAX_REFILL"]
-    assert entry.yes_value == "0" and entry.question
+    assert entry.no_value == "0" and entry.question
     assert int(entry.value) == _reloaded(monkeypatch, WARM_MAX_REFILL=None)["WARM_MAX_REFILL"]
 
 

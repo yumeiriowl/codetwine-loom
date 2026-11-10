@@ -1221,8 +1221,9 @@ def test_the_template_answered_is_the_one_the_documents_are_made_from(empty_dir,
 
 
 @pytest.mark.parametrize("name, answer, line", [
-    ("WARM_MAX_REFILL", "y", "\nWARM_MAX_REFILL=0\n"),
-    ("WARM_MAX_REFILL", "", "\n# WARM_MAX_REFILL=3\n")])
+    ("WARM_MAX_REFILL", "n", "\nWARM_MAX_REFILL=0\n"),
+    ("WARM_MAX_REFILL", "", "\n# WARM_MAX_REFILL=3\n"),
+    ("WARM_MAX_REFILL", "y", "\n# WARM_MAX_REFILL=3\n")])
 def test_a_setting_with_a_question_is_asked_for_with_y_or_n(empty_dir, monkeypatch, name,
                                                             answer, line):
     _key_is_what_is_missing(monkeypatch)
@@ -1235,6 +1236,25 @@ def test_a_setting_with_a_question_is_asked_for_with_y_or_n(empty_dir, monkeypat
     assert line in (empty_dir / ".env").read_text(encoding="utf-8")
     monkeypatch.delenv(name, raising=False)
     importlib.reload(config)
+
+
+@pytest.mark.parametrize("current, answer, choice, value", [
+    ("", "", "Y/n", ""), ("", "y", "Y/n", ""), ("", "n", "Y/n", "0"),
+    ("0", "", "y/N", "0"), ("0", "y", "y/N", ""), ("0", "n", "y/N", "0"),
+    ("5", "", "Y/n, Enter keeps WARM_MAX_REFILL=5", "5"),
+    ("5", "y", "Y/n, Enter keeps WARM_MAX_REFILL=5", "5"),
+    ("5", "n", "Y/n, Enter keeps WARM_MAX_REFILL=5", "0")])
+def test_a_question_sets_its_value_on_n_and_keeps_any_other_on_y(monkeypatch, current,
+                                                                 answer, choice, value):
+    entry = config.EnvTemplateEntry("WARM_MAX_REFILL", "3", [], "Download them?", "0")
+    asked = []
+
+    def ask(question, is_secret=False):
+        asked.append(question)
+        return answer
+    monkeypatch.setattr(cli.progress, "ask", ask)
+    assert cli._ask_question(entry, current) == value
+    assert asked == [f"Download them? [{choice}]: "]
 
 
 def test_a_value_out_of_the_choices_is_asked_again(empty_dir, monkeypatch, capsys):
@@ -1846,7 +1866,7 @@ def test_a_run_that_fetches_no_package_is_still_asked_where_to_search(empty_dir,
     question = {entry.name: entry.question
                 for entry in config.env_template_entry_list()}["WARM_MAX_REFILL"]
     text, asked = _first_run_env_text(empty_dir, monkeypatch,
-                                      {question: "y", "WEB_SEARCH_PROVIDER": "1"})
+                                      {question: "n", "WEB_SEARCH_PROVIDER": "1"})
     assert "\nWARM_MAX_REFILL=0\n" in text
     assert f"\nWEB_SEARCH_PROVIDER={config.WEB_SEARCH_BY_THE_MODEL}\n" in text
     assert "WEB_FETCH_PROVIDER" in asked
@@ -2466,7 +2486,7 @@ def test_the_first_run_does_not_ask_for_a_setting_the_shell_holds(empty_dir, mon
     try:
         importlib.reload(config)
         text, asked = _first_run_env_text(empty_dir, monkeypatch, {
-            "PROJECT_DIR": "/answer/repo", _WARM_QUESTION: "y",
+            "PROJECT_DIR": "/answer/repo", _WARM_QUESTION: "n",
             "WEB_SEARCH_PROVIDER": "tavily", "WEB_SEARCH_API_KEY": "k-answer",
             "WEB_FETCH_PROVIDER": "jina", "WEB_FETCH_API_KEY": "k-fetch"})
     finally:

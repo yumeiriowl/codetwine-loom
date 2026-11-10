@@ -2414,8 +2414,8 @@ def _ask_question(entry: config.EnvTemplateEntry, current: str = "") -> str:
     """Print a setting's comment lines and ask for it with the template's question.
 
     Examples:
-        "y" -> entry.yes_value
-        "n" -> ""
+        "n" -> entry.no_value
+        "y" -> current, or "" when current is entry.no_value
         ""  -> current
         "x" -> asked again
 
@@ -2424,19 +2424,22 @@ def _ask_question(entry: config.EnvTemplateEntry, current: str = "") -> str:
         current: The value .env holds for it, which Enter keeps; "" when it holds none.
 
     Returns:
-        entry.yes_value on y, "" on n, current on Enter.
+        entry.no_value on n, current on Enter, and on y current unless it is
+        entry.no_value, which y turns into "".
     """
     _print_help(entry)
-    if not current:
+    if current == entry.no_value:
         choice_text = "y/N"
-    elif current == entry.yes_value:
+    elif not current:
         choice_text = "Y/n"
     else:
-        choice_text = f"y/n, Enter keeps {entry.name}={current}"
+        choice_text = f"Y/n, Enter keeps {entry.name}={current}"
     is_yes = _ask_yes_no(f"{entry.question} [{choice_text}]: ")
     if is_yes is None:
         return current
-    return entry.yes_value if is_yes else ""
+    if not is_yes:
+        return entry.no_value
+    return "" if current == entry.no_value else current
 
 
 def _ask_endpoint_choice(entry: config.EnvTemplateEntry, choice_list: list[str],
@@ -2998,7 +3001,7 @@ def _ask_env_file(is_lack: bool) -> str:
     a terminal is attached (progress.at_terminal) and it can be written
     (_env_file_ask_path). With nothing missing, the first question is whether to answer
     now, and anything but y writes the template as it is. A setting the template gives a
-    question for is asked for with it and [y/N]. The proxy's settings are asked for
+    question for is asked for with it and [Y/n]. The proxy's settings are asked for
     after one [y/N] (_ask_proxy). The WEB_SEARCH_* settings are asked for as one
     question and the WEB_FETCH_* settings as another. A setting the shell holds a value
     for is not asked for and is said to be left as it is, and the WEB_SEARCH_* or

@@ -695,9 +695,9 @@ ENV_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), ".env.example")
 # A setting line of the template: NAME=value, or the same commented out
 _TEMPLATE_LINE_RE = re.compile(r"^(#\s*)?([A-Z][A-Z0-9_]*)=(.*)$")
 
-# A question line of the template, above the setting it asks for: "#? y=<value> <question>".
-# The setting is asked for with the question and [y/N], and y sets it to <value>
-_TEMPLATE_QUESTION_RE = re.compile(r"^#\?\s*y=(\S+)\s+(.+)$")
+# A question line of the template, above the setting it asks for: "#? n=<value> <question>".
+# The setting is asked for with the question and [Y/n], and n sets it to <value>
+_TEMPLATE_QUESTION_RE = re.compile(r"^#\?\s*n=(\S+)\s+(.+)$")
 
 # A line of the template above a setting that is not asked for: "#? skip". The setting
 # keeps the template's line, and so its default, until it is set by hand
@@ -766,14 +766,14 @@ class EnvTemplateEntry:
         value: The value as the template writes it, commented out or not.
         help_list: The comment lines directly above it, without the leading "# ".
         question: The question it is asked for with, or "" when it is asked for by name.
-        yes_value: What a y to question sets it to. "" when there is no question.
+        no_value: What an n to question sets it to. "" when there is no question.
         skip: True for a setting that is not asked for (a "#? skip" line above it).
     """
     name: str
     value: str
     help_list: list[str]
     question: str = ""
-    yes_value: str = ""
+    no_value: str = ""
     skip: bool = False
 
 
@@ -828,29 +828,29 @@ def env_template_entry_list() -> list[EnvTemplateEntry]:
     """Return the settings the template names, in the order they are written.
 
     A blank line ends a block of comment lines; the file's heading is attached to no
-    setting. A question line ("#? y=<value> <question>") and a skip line ("#? skip") go
+    setting. A question line ("#? n=<value> <question>") and a skip line ("#? skip") go
     to the setting below it and not into its help lines.
 
     Returns:
         One EnvTemplateEntry per setting.
     """
     entry_list, help_list = [], []
-    question, yes_value, skip = "", "", False
+    question, no_value, skip = "", "", False
     for line in _template_line_list():
         match = _TEMPLATE_LINE_RE.match(line)
         question_match = _TEMPLATE_QUESTION_RE.match(line)
         if match:
             entry_list.append(EnvTemplateEntry(match[2], match[3], help_list,
-                                               question, yes_value, skip))
-            help_list, question, yes_value, skip = [], "", "", False
+                                               question, no_value, skip))
+            help_list, question, no_value, skip = [], "", "", False
         elif question_match:
-            yes_value, question = question_match[1], question_match[2]
+            no_value, question = question_match[1], question_match[2]
         elif _TEMPLATE_SKIP_RE.match(line):
             skip = True
         elif line.startswith("#"):
             help_list.append(line.lstrip("# "))
         else:
-            help_list, question, yes_value, skip = [], "", "", False
+            help_list, question, no_value, skip = [], "", "", False
     return entry_list
 
 
