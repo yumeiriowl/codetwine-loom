@@ -43,14 +43,14 @@ RUN if [ -n "$CA_PEM" ]; then \
 ARG TOOLCHAIN="c cbl cs java js kt r rs ts"
 
 # The Gradle distribution TOOLCHAIN=kt installs. Override to pick another version
-ARG GRADLE_VERSION=8.14.6
+ARG GRADLE_VERSION=8.14.7
 
 # The Temurin JDK 11 TOOLCHAIN=java installs beside the default JDK, under
 # /opt/ctloom-jdk11, with the SHA-256 of its x64 and aarch64 archives. Maven builds a
 # project whose pom.xml files target Java 8 or older, and none above 11, with it
-ARG JDK11_VERSION=11.0.32.1+1
-ARG JDK11_SHA256_X64=5c3f68887c325d36d852ba534303e1f5f1f5cae7d6cc1e951d73e0d8e98a058d
-ARG JDK11_SHA256_AARCH64=f27033e6f7523c1b0b2565a78e9c0e0abe5596a854ce00ca04ec1b06ece7a935
+ARG JDK11_VERSION=11.0.33+10
+ARG JDK11_SHA256_X64=c4b8eaf56c93b95b689ffc08d155df1bcdbbffb666f8f71d21d97aedaea6f0ec
+ARG JDK11_SHA256_AARCH64=60b0fb79bb678b6fae3e499c7b0a353e68633ed0ab69d1a6bafe6092ed1e59e4
 
 # The Rust toolchain TOOLCHAIN=rs installs. Override to pick another version. Its
 # binaries are linked into /usr/local/bin, and cargo keeps the crates it fetches under
@@ -69,10 +69,10 @@ ARG BUN_VERSION=1.4.4
 ARG BUN_SHA256_X64=e0446eb55995772eb9894bebae9a6be368d985a8b9271ee124486f9946eedd76
 ARG BUN_SHA256_AARCH64=baa6bb36f51d6e58561e02bbea825038a9df454f673d6d776e8bbf86f8c7850e
 
-# The .NET SDK channels TOOLCHAIN=cs installs, separated by spaces (e.g. "10.0 8.0").
+# The .NET SDK channels TOOLCHAIN=cs installs, separated by spaces (e.g. "11.0 10.0 8.0").
 # Override to pick others. The SDKs go under /usr/share/dotnet, dotnet is linked into
 # /usr/local/bin, and the packages it restores are kept under $HOME/.nuget/packages
-ARG DOTNET_CHANNEL=10.0
+ARG DOTNET_CHANNEL="11.0 10.0"
 
 RUN if [ -n "$CA_PEM" ]; then \
       { cat /etc/ssl/certs/ca-certificates.crt; printf '%s\n' "$CA_PEM"; } > /tmp/ctloom-ca.pem \

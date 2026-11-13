@@ -35,8 +35,8 @@ podman build --build-arg TOOLCHAIN="java ts" -t codetwine-loom-java-ts .
 # Build behind a proxy that signs TLS with its own certificate authority (pass the PEM of the proxy's CA)
 podman build --build-arg CA_PEM="$(cat corp-ca.pem)" -t codetwine-loom .
 docker build --build-arg CA_PEM="$(cat corp-ca.pem)" --build-arg HTTPS_PROXY="$HTTPS_PROXY" -t codetwine-loom .
-# Install two .NET SDK channels
-podman build --build-arg DOTNET_CHANNEL="10.0 8.0" -t codetwine-loom .
+# Install a third .NET SDK channel
+podman build --build-arg DOTNET_CHANNEL="11.0 10.0 8.0" -t codetwine-loom .
 ```
 
 `TOOLCHAIN` takes the values in the first column below; the default is `c cbl cs java js kt r rs ts`. `py` and `sql` are accepted and add nothing, and any other value stops the build. Every image holds Python 3.12, git and `uv`. The tool's own dependencies are installed at the versions in `uv.lock`, and the build fails when `pyproject.toml` or `uv.toml` disagrees with it. The base images (`python:3.12-slim`, `ghcr.io/astral-sh/uv:latest`) are taken from the host when it has them, and the uv in the image must be 0.11.8 or later. A rebuild with the same arguments reuses cached steps. To renew the base images and packages, build with `podman build --no-cache --pull=newer` (`docker build --no-cache --pull`).
@@ -44,11 +44,11 @@ podman build --build-arg DOTNET_CHANNEL="10.0 8.0" -t codetwine-loom .
 | `TOOLCHAIN` | What it installs | Commands it adds |
 |---|---|---|
 | `java` | Debian's `default-jdk` and `maven`, and Temurin JDK 11 (`JDK11_VERSION`; amd64 and arm64). Maven uses JDK 11 for builds whose `pom.xml` files target Java 8 or older and none targets above 11 | — |
-| `kt` / `kts` | `default-jdk` and Gradle (`GRADLE_VERSION`, default `8.14.6`) | `gradle` |
+| `kt` / `kts` | `default-jdk` and Gradle (`GRADLE_VERSION`, default `8.14.7`) | `gradle` |
 | `js` / `ts` (and `jsx`, `mjs`, `cjs`, `tsx`, `mts`, `cts`) | Debian's `nodejs` and `npm`; `g++` and `make` for native packages; `pnpm` and `yarn` through corepack (`COREPACK_VERSION`); Bun (`BUN_VERSION`, default `1.4.4`; x86-64 and ARM64); ESLint 10; TypeScript 5 with the type definitions of Node.js, jest and Bun. No browser, so browser tests (karma and the like) do not run | `bun`, `bunx`, `ctloom-check-js` (`js`), `ctloom-check-ts` (`ts`), `ctloom-install-js` |
 | `c` / `cpp` / `h` / `cc` / `cxx` / `hpp` / `hh` / `hxx` | GCC (`build-essential`), CMake, Ninja, autotools, `pkgconf`, bison and flex | `ctloom-check-c`, `ctloom-test-c`, `ctloom-run-c` |
 | `rs` | Rust (`RUST_VERSION`, default `1.99.1`) with GCC, `make`, `pkg-config` and `libssl-dev`. `rust-toolchain.toml` is not read | `ctloom-check-rs` |
-| `cs` | The .NET SDK (`DOTNET_CHANNEL`, several separated by spaces; default `10.0`). Add a version here when `global.json` asks for one the image lacks | `ctloom-check-cs` |
+| `cs` | The .NET SDK (`DOTNET_CHANNEL`, several separated by spaces; default `11.0 10.0`). Add a version here when `global.json` asks for one the image lacks | `ctloom-check-cs` |
 | `cbl` (and `cob`, `cpy`, `bms`, `jcl`, `prc`, `proc`, `csd`) | GnuCOBOL | `ctloom-check-cbl` |
 | `r` (and `rmd`, `qmd`) | R, testthat and codetools. `renv.lock` is not read | `ctloom-check-r`, `ctloom-test-r` |
 
