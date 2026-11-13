@@ -335,7 +335,7 @@ With `TWO_STAGE=true`, a planning stage runs before the change. It cannot rewrit
 | `PLAN_MAX_FILE` | The most files one plan can list | `8` |
 | `PLAN_MAX_FACT` | The most confirmed facts one plan can carry | `12` |
 | `PLAN_ANSWER_MAX_CHAR` | The most characters of the plan (JSON); the rest is cut. `0` means no limit | `40000` |
-| `PLAN_COMPLETE_GUARD` | Whether the change stage's `COMPLETE()` is sent back once while planned files are untouched | `true` |
+| `PLAN_COMPLETE_GUARD` | Whether the change stage's `COMPLETE()` is sent back once while planned files are untouched, or, with no plan, while no file has changed | `true` |
 | `PLAN_LATE_ANSWER` | When the planning stage runs out of turns without `COMPLETE()`, whether to ask once more for the plan | `true` |
 
 ## The explorer

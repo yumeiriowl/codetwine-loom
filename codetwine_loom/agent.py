@@ -1018,7 +1018,8 @@ def _run_edit(rlm: RLM, request: str, start_dict: dict | None = None) -> dict:
     enters this prompt; only its plan does, together with a per-turn status block and a
     guard that sends the first COMPLETE() back while a planned file is still untouched. A
     plan that could not be read is logged and the editing stage runs as it does in a
-    single-stage run.
+    single-stage run. With no plan and config.PLAN_COMPLETE_GUARD on, the first
+    COMPLETE() is sent back while no file has changed (plan.make_complete_guard(None)).
 
     The flow:
     1. Search once and hand the result to the explorer.
@@ -1054,6 +1055,8 @@ def _run_edit(rlm: RLM, request: str, start_dict: dict | None = None) -> dict:
     if config.TWO_STAGE:
         plan_result_dict, plan_text, plan_note, plan_guard = _run_plan_stage(
             request, scope_dict, prior_text)
+    if plan_guard is None and config.PLAN_COMPLETE_GUARD:
+        plan_guard = plan.make_complete_guard(None)
 
     # == Step 3: put the request together =============================
     # With a plan the scope goes in brief, and step 1 of the instructions is built again

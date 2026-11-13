@@ -491,6 +491,22 @@ def test_complete_passes_when_every_planned_file_was_touched(monkeypatch, no_git
 def test_the_guard_can_be_turned_off(monkeypatch, no_git):
     monkeypatch.setattr(config, "PLAN_COMPLETE_GUARD", False)
     assert plan.make_complete_guard(json.loads(PLAN_JSON))("done") == ""
+    assert plan.make_complete_guard(None)("done") == ""
+
+
+def test_a_run_with_no_plan_is_refused_once_while_no_file_changed(monkeypatch, no_git):
+    monkeypatch.setattr(config, "PLAN_COMPLETE_GUARD", True)
+    monkeypatch.setattr(plan, "change_path_set", lambda: set())
+    guard = plan.make_complete_guard(None)
+    refusal = guard("Wrote sol.sql")
+    assert refusal.startswith("COMPLETE() was not accepted. No file has been changed")
+    assert guard("It needs no change") == ""
+
+
+def test_a_run_with_no_plan_passes_once_a_file_changed(monkeypatch, no_git):
+    monkeypatch.setattr(config, "PLAN_COMPLETE_GUARD", True)
+    monkeypatch.setattr(plan, "change_path_set", lambda: {"sol.sql"})
+    assert plan.make_complete_guard(None)("Wrote sol.sql") == ""
 
 
 # == agent.run_edit with the two stages =====================
@@ -547,6 +563,7 @@ def test_the_editing_stage_gets_the_plan_and_both_hooks(stub_search, plan_llm,
     assert "## Plan" in rlm.request
     assert rlm.turn_note(1, 40).startswith("## Plan status")
     assert "codetwine/pipeline.py" in rlm.on_complete("done")
+    assert rlm.on_complete("done") == ""
 
 
 def test_the_editing_stage_drops_the_file_summaries_behind_a_plan(stub_search, plan_llm,
@@ -584,6 +601,8 @@ def test_an_unreadable_plan_leaves_the_editing_stage_as_it_was(stub_search, monk
     assert "## Plan" not in rlm.request and rlm.turn_note(1, 40) == ""
     # The full scope comes back when there is no plan to replace it
     assert "File summaries:" in rlm.request
+    monkeypatch.setattr(plan, "change_path_set", lambda: set())
+    assert rlm.on_complete("x").startswith("COMPLETE() was not accepted. No file")
 
 
 # == The deadline note and a plan wrapped in prose ==========

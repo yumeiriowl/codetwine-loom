@@ -316,6 +316,12 @@ _COMPLETE_REFUSAL = ("{call}() was not accepted. These files are in the plan and
                      "{call}() again saying why they need no change. This is asked "
                      "once only.")
 
+# What the call that ended the run is sent back with while a run with no plan has
+# changed no file. It is refused at most once, and {call} comes from rlm.END_CALL_DICT
+_NO_CHANGE_REFUSAL = ("{call}() was not accepted. No file has been changed in this run. "
+                      "Either make the change the task asks for, or call {call}() again "
+                      "saying why it needs no change. This is asked once only.")
+
 
 # What _PLAN_RUN_NOTE says of the launcher where the language says nothing of its own
 # (run.launcher_note)
@@ -839,23 +845,30 @@ def make_state_note(with_change: bool = False) -> Callable[[int, int], str]:
     return turn_note
 
 
-def make_complete_guard(plan_dict: dict) -> Callable[[object], str]:
-    """Build the guard that sends COMPLETE() back once while a planned file is untouched.
+def make_complete_guard(plan_dict: dict | None) -> Callable[[object], str]:
+    """Build the guard that sends COMPLETE() back once while the change is not made.
 
-    It refuses at most once; it accepts every later COMPLETE().
+    With a plan, it refuses while a planned file is untouched. Without one, it refuses
+    while no file has changed (change_path_set). It refuses at most once; it accepts
+    every later COMPLETE().
 
     Args:
-        plan_dict: The "plan" of parse_plan().
+        plan_dict: The "plan" of parse_plan(), or None for a run with no plan.
 
     Returns:
         on_complete(answer) -> str for RLM.run(): "" accepts, text refuses.
     """
     def check(answer: object) -> str:
-        """Return the refusal while a planned file is untouched, else ""."""
+        """Return the refusal while the change is not made, else ""."""
         if not config.PLAN_COMPLETE_GUARD:
             return ""
         # Asked after the turn's code ran: a file the same block wrote counts
         change_set = change_path_set()
+        if plan_dict is None:
+            if change_set:
+                return ""
+            logger.info("%s() refused once: no file changed", END_CALL_DICT[COMPLETE_KEY])
+            return _NO_CHANGE_REFUSAL.format(call=END_CALL_DICT[COMPLETE_KEY])
         miss_list = [path for path in plan_path_list(plan_dict) if path not in change_set]
         if not miss_list:
             return ""

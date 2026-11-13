@@ -353,7 +353,7 @@ The branch is only read, never checked out. The workers start from the current w
 
 ## Exit codes and how a run ends (`COMPLETE()`)
 
-Every stage ends when the model calls `COMPLETE()`. Workers that answer questions and the merge end with `COMPLETE("<answer>")`. When a request needs no change, the change stage ends with `COMPLETE("<why-not-needed>")`, which is recorded as `no_change`. A `COMPLETE()` that breaks a rule (too long, too many things to confirm, a split in the wrong form) is sent back once; if it is still too long, it is cut, and if the form is still wrong, the run stops.
+Every stage ends when the model calls `COMPLETE()`. Workers that answer questions and the merge end with `COMPLETE("<answer>")`. When a request needs no change, the change stage ends with `COMPLETE("<why-not-needed>")`, which is recorded as `no_change`; the first such `COMPLETE()` is sent back once (`PLAN_COMPLETE_GUARD`). A `COMPLETE()` that breaks a rule (too long, too many things to confirm, a split in the wrong form) is sent back once; if it is still too long, it is cut, and if the form is still wrong, the run stops.
 
 | Exit code | When |
 |------|------|

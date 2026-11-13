@@ -741,12 +741,24 @@ def test_a_guard_that_is_off_is_left_out():
     assert only("done") == "no"
 
 
-def test_the_editing_loop_is_handed_the_chained_guard(_no_search):
+def test_the_editing_loop_is_handed_the_chained_guard(_no_search, monkeypatch):
+    monkeypatch.setattr(config, "PLAN_COMPLETE_GUARD", False)
     rlm = _RecordingRLM()
     agent.run_edit(rlm, "この関数は何をしている?")
-    # smoke's guard is off without SMOKE_ARG and there is no plan, so nothing is
+    # smoke's guard is off without SMOKE_ARG and the plan's guard is off, so nothing is
     # chained and the loop is handed None rather than a guard that always accepts
     assert rlm.on_complete is None
+
+
+def test_a_run_with_no_plan_is_handed_the_guard_on_a_change_not_made(_no_search,
+                                                                     monkeypatch):
+    monkeypatch.setattr(config, "PLAN_COMPLETE_GUARD", True)
+    monkeypatch.setattr(agent.plan, "change_path_set", lambda: set())
+    rlm = _RecordingRLM()
+    agent.run_edit(rlm, "空のときに落ちないようにして")
+    assert rlm.on_complete("Wrote it").startswith(
+        "COMPLETE() was not accepted. No file has been changed")
+    assert rlm.on_complete("It needs no change") == ""
 
 
 def test_run_edit_reports_that_the_run_ended_itself(_no_search):
@@ -1046,7 +1058,9 @@ def test_a_run_that_changed_nothing_is_not_sent_back(_final, monkeypatch):
 
 
 def test_the_editing_loop_is_handed_the_check_guard_of_a_run_on_its_own(_no_search,
-                                                                        _final):
+                                                                        _final,
+                                                                        monkeypatch):
+    monkeypatch.setattr(config, "PLAN_COMPLETE_GUARD", False)
     rlm = _RecordingRLM(answer="renamed it")
     agent.run_edit(rlm, "名前を変えて")
     assert rlm.on_complete is None
