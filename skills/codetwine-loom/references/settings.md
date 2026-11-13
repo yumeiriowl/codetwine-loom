@@ -154,7 +154,7 @@ Without a provider, the agents get no web tools. In container runs only the brok
 | Variable | Description |
 |---|---|
 | `HTTPS_PROXY` / `HTTP_PROXY` / `ALL_PROXY` | `http://` or `https://` proxy URL. User and password in ASCII; percent-encode `#`, `/`, `?`, `[`, `]`, `\` |
-| `NO_PROXY` | Hosts reached directly, comma-separated, host only (no scheme or port) |
+| `NO_PROXY` | Hosts reached directly, comma-separated, host only (no scheme, port or network) |
 | `SSL_CERT_FILE` | A PEM file of certificate authorities, for a proxy that signs TLS itself. Also passed to the image build |
 
 The containers that fetch dependencies get these; the containers that make changes do not. A proxy on `127.0.0.1` cannot be reached from containers.

@@ -17,6 +17,7 @@ import types
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import httpx
+import httpx2
 import litellm
 import openai
 import pytest
@@ -791,8 +792,9 @@ def test_a_handler_makes_a_client_that_follows_no_redirect_in_place_of_a_closed_
     handler.close()
 
 
-@pytest.mark.parametrize("client_class, http_class",
-                         [(openai.OpenAI, httpx.Client), (openai.AsyncOpenAI, httpx.AsyncClient)])
+@pytest.mark.parametrize("client_class, http_class", [
+    (openai.OpenAI, httpx.Client), (openai.AsyncOpenAI, httpx.AsyncClient),
+    (openai.OpenAI, httpx2.Client), (openai.AsyncOpenAI, httpx2.AsyncClient)])
 def test_every_openai_sdk_client_sends_with_a_client_that_follows_no_redirect(
         client_class, http_class):
     """The client it is given, and the one it makes when it is given none."""
@@ -901,8 +903,23 @@ def test_a_client_of_another_kind_leaves_the_reason_no_call_is_made(monkeypatch)
     monkeypatch.setattr(providercall, "_redirect_block_text", "")
     with pytest.raises(TypeError):
         providercall._no_redirect(object())
-    with pytest.raises(RuntimeError, match="object is not an httpx client"):
+    with pytest.raises(RuntimeError, match=r"the HTTP clients of litellm \S+ and openai "
+                                           r"\S+ .*object is not an httpx or httpx2 "
+                                           r"client"):
         providercall.check_before_call()
+
+
+@pytest.mark.parametrize("module", [httpx, httpx2])
+def test_a_client_of_either_httpx_module_is_set_to_follow_no_redirect(module):
+    """A client of httpx or httpx2, sync or async, leaves no reason to refuse a call."""
+    with module.Client(follow_redirects=True) as client:
+        assert providercall._no_redirect(client) is client
+        assert client.follow_redirects is False
+    async_client = module.AsyncClient(follow_redirects=True)
+    assert providercall._no_redirect(async_client) is async_client
+    assert async_client.follow_redirects is False
+    asyncio.run(async_client.aclose())
+    assert providercall._redirect_block_text == ""
 
 
 @pytest.mark.parametrize("name, value", [

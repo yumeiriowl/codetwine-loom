@@ -17,6 +17,7 @@ import time
 from types import SimpleNamespace
 
 import httpx
+import httpx2
 import litellm
 import pytest
 
@@ -1054,7 +1055,9 @@ _NO_ROUTE = ("none of HTTPS_PROXY, HTTP_PROXY, ALL_PROXY, NO_PROXY, SSL_CERT_FIL
     (httpx.RequestError("403, message='Forbidden', url='http://me:pw@10.1.2.3:3128'"),
      "RequestError"),
     (httpx.ReadTimeout("timed out"), "ReadTimeout"),
-    (httpx.RemoteProtocolError("Server disconnected"), "RemoteProtocolError")])
+    (httpx.RemoteProtocolError("Server disconnected"), "RemoteProtocolError"),
+    (httpx2.ConnectError("All connection attempts failed"), "ConnectError"),
+    (httpx2.ReadTimeout("timed out"), "ReadTimeout")])
 def test_a_call_no_response_came_back_to_is_told_without_its_text(monkeypatch, caplog,
                                                                   cause, name):
     """What the caller is told and what the broker logs name the exception and its

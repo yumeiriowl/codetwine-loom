@@ -1125,11 +1125,13 @@ def test_everything_the_image_copies_is_there(copied):
         f"the Dockerfile copies {copied}, which is not in the repository"
 
 
-# The files of the installed litellm that write a client that follows a redirect.
-# providercall.py keeps the ones a completion goes through from following one
-_FOLLOW_REDIRECT_FILE_SET = {
-    "experimental_mcp_client/client.py", "litellm_core_utils/url_utils.py",
-    "llms/custom_httpx/http_handler.py", "llms/openai/common_utils.py"}
+# The files of the installed litellm and OpenAI SDK that write a client that follows a
+# redirect, by package. providercall.py keeps the ones a completion goes through from
+# following one
+_FOLLOW_REDIRECT_FILE_DICT = {
+    "litellm": {"litellm_core_utils/url_utils.py", "mcp_client/client.py",
+                "llms/custom_httpx/http_handler.py", "llms/openai/common_utils.py"},
+    "openai": {"_base_client.py", "_httpx2.py"}}
 
 
 def test_the_litellm_installed_holds_what_keeps_a_call_from_following_a_redirect():
@@ -1151,12 +1153,13 @@ def test_the_litellm_installed_holds_what_keeps_a_call_from_following_a_redirect
     assert hasattr(vars(aiohttp.ClientSession)["_request"], "__wrapped__")
 
 
-def test_litellm_writes_a_client_that_follows_a_redirect_only_where_it_is_known_to():
-    """A file of litellm that starts to write one is looked at before it is used."""
-    import litellm
-
-    root = pathlib.Path(litellm.__file__).resolve().parent
+@pytest.mark.parametrize("package", sorted(_FOLLOW_REDIRECT_FILE_DICT))
+def test_a_package_writes_a_client_that_follows_a_redirect_only_where_it_is_known_to(
+        package):
+    """A file of litellm or the OpenAI SDK that starts to write one is looked at before
+    it is used."""
+    root = pathlib.Path(importlib.import_module(package).__file__).resolve().parent
     found_set = {path.relative_to(root).as_posix() for path in root.rglob("*.py")
                  if re.search(r"""(follow|allow)_redirects["']?\s*[=,:]\s*True""",
                               path.read_text(encoding="utf-8"))}
-    assert found_set == _FOLLOW_REDIRECT_FILE_SET
+    assert found_set == _FOLLOW_REDIRECT_FILE_DICT[package]

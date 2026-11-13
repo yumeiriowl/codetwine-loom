@@ -29,9 +29,9 @@ From the import of this module on, the HTTP clients litellm's own handlers hand 
 make, the client an OpenAI SDK client sends with, and the requests of an aiohttp session
 follow no redirect (_keep_from_redirect): a call's key and prompt are sent to the
 endpoint the call names, and an endpoint that answers with a redirect fails the attempt.
-A litellm whose clients cannot be set so, and a proxy variable an HTTP client of this
-tool cannot read (config.proxy_error_text), have completion() fail before an attempt is
-made (check_before_call).
+A litellm or an OpenAI SDK whose clients cannot be set so, and a proxy variable an HTTP
+client of this tool cannot read (config.proxy_error_text), have completion() fail before
+an attempt is made (check_before_call).
 """
 
 import asyncio
@@ -122,6 +122,10 @@ _loop_thread: threading.Thread | None = None
 # Why an HTTP client of this process could not be set to follow no redirect; ""
 # otherwise
 _redirect_block_text = ""
+
+# The client classes of the modules of config.HTTPX_MODULE_TUPLE
+_HTTPX_CLIENT_CLASS_TUPLE = tuple(client_class for module in config.HTTPX_MODULE_TUPLE
+                                  for client_class in (module.Client, module.AsyncClient))
 
 # Held while litellm is given the HTTP clients its calls through the OpenAI SDK share
 # (_share_client)
@@ -381,19 +385,22 @@ def _block_redirect_text(error: Exception) -> str:
     """Return the reason no call is made, for an HTTP client that may follow a redirect.
 
     Args:
-        error: What kept a client of this litellm from being set to follow none.
+        error: What kept a client of litellm or the OpenAI SDK from being set to follow
+            none.
 
     Returns:
-        One line naming the litellm version and the error.
+        One line naming the versions of litellm and the OpenAI SDK, and the error.
     """
-    try:
-        version = importlib.metadata.version("litellm")
-    except importlib.metadata.PackageNotFoundError:
-        version = "?"
-    return (f"no call is made to a model: the HTTP clients of litellm {version} cannot "
-            f"be kept from following a redirect "
+    version_list = []
+    for package in ("litellm", "openai"):
+        try:
+            version_list.append(f"{package} {importlib.metadata.version(package)}")
+        except importlib.metadata.PackageNotFoundError:
+            version_list.append(f"{package} ?")
+    return (f"no call is made to a model: the HTTP clients of {' and '.join(version_list)} "
+            f"cannot be kept from following a redirect "
             f"({type(error).__name__}: {textcut.one_line(str(error))}); "
-            f"install a litellm version this tool supports")
+            f"install versions of them this tool supports")
 
 
 def _no_redirect(client: object) -> object:
@@ -407,12 +414,14 @@ def _no_redirect(client: object) -> object:
         client, whose follow_redirects is False.
 
     Raises:
-        TypeError: When client is not an httpx client. _redirect_block_text holds
-            the reason from then on.
+        TypeError: When client is not a client of a module of
+            config.HTTPX_MODULE_TUPLE. _redirect_block_text holds the reason from then
+            on.
     """
     global _redirect_block_text
-    if not isinstance(client, (httpx.Client, httpx.AsyncClient)):
-        error = TypeError(f"{type(client).__name__} is not an httpx client")
+    if not isinstance(client, _HTTPX_CLIENT_CLASS_TUPLE):
+        module_text = " or ".join(module.__name__ for module in config.HTTPX_MODULE_TUPLE)
+        error = TypeError(f"{type(client).__name__} is not an {module_text} client")
         _redirect_block_text = _block_redirect_text(error)
         raise error
     client.follow_redirects = False

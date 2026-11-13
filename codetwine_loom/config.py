@@ -27,6 +27,7 @@ import codecs
 import contextlib
 import errno
 import http.client
+import importlib
 import io
 import ipaddress
 import json
@@ -47,6 +48,7 @@ from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
 
 import httpx
+import httpx2
 from dotenv import dotenv_values, load_dotenv
 from dotenv import parser as dotenv_parser
 
@@ -159,6 +161,10 @@ def _env_fill_skip(name: str, shell_name_set: set[str]) -> bool:
         for shell_name, other in _proxy_case_pair_list())
 
 
+# The httpx modules whose clients the model calls are sent with: httpx, which litellm
+# sends with, and httpx2, which the OpenAI SDK makes its own clients with
+HTTPX_MODULE_TUPLE = (httpx, httpx2)
+
 # The schemes of the proxies the HTTP clients of this tool go through
 PROXY_SCHEME_TUPLE = ("http", "https")
 
@@ -189,6 +195,8 @@ _ENDPOINT_SCHEME_TUPLE = ("http://", "https://")
 # write it instead
 _NO_PROXY_ENTRY_TEXT_DICT = {
     "scheme": ("an entry with a scheme (scheme://host)", "write the host alone"),
+    "network": ("an entry that names a network (address/prefix)",
+                "write each address alone"),
     "port": ("an entry with a port (host:port)", "write the host alone"),
     "dot": ("an entry with a leading '.' that names the host itself",
             "write the host without the '.'"),
@@ -3110,17 +3118,19 @@ def _host_key(host: str) -> str:
         return host
 
 
-def _httpx_proxy_reading(url: str) -> tuple[str, int | None, bytes | None]:
-    """Read a proxy's URL as httpx does.
+def _httpx_proxy_reading(module: types.ModuleType,
+                         url: str) -> tuple[str, int | None, bytes | None]:
+    """Read a proxy's URL as one module of HTTPX_MODULE_TUPLE does.
 
     Args:
+        module: httpx or httpx2.
         url: The proxy's URL, with its scheme.
 
     Returns:
         The host it connects to, the port, and the user and the password it sends
         joined by ":" (None when it sends none).
     """
-    proxy = httpx.Proxy(url)
+    proxy = module.Proxy(url)
     port = proxy.url.port
     if port is None:
         port = 443 if proxy.url.scheme == "https" else 80
@@ -3236,20 +3246,22 @@ def _is_port_written(url: str) -> bool:
 
 
 def _proxy_reading_list(scheme: str, url: str) -> list[tuple[str, int | None, bytes | None]]:
-    """Read a proxy's URL as httpx, aiohttp and, for an http:// proxy, urllib do.
+    """Read a proxy's URL as httpx, httpx2, aiohttp and, for an http:// proxy, urllib do.
 
     Args:
         scheme: The URL's scheme, in lower case.
         url: The proxy's URL, with its scheme.
 
     Returns:
-        The readings of httpx and aiohttp, and for an http:// proxy those of urllib
-        (_urllib_proxy_reading_list), each as (host, port, user and password).
+        The readings of each module of HTTPX_MODULE_TUPLE and of aiohttp, and for an
+        http:// proxy those of urllib (_urllib_proxy_reading_list), each as (host,
+        port, user and password).
 
     Raises:
         Exception: Whatever a client's reading raises.
     """
-    reading_list = [_httpx_proxy_reading(url), _aiohttp_proxy_reading(url)]
+    reading_list = [*(_httpx_proxy_reading(module, url) for module in HTTPX_MODULE_TUPLE),
+                    _aiohttp_proxy_reading(url)]
     if scheme == "http":
         reading_list += _urllib_proxy_reading_list(url)
     return reading_list
@@ -3381,7 +3393,7 @@ def _unread_part_text(scheme: str, user_part: str, host_port: str) -> str:
 def proxy_url_error(value: str, port_needed: bool = False) -> str:
     """Say what keeps a proxy's URL from being read the same by the HTTP clients.
 
-    The clients are httpx, aiohttp and, for an http:// proxy, urllib
+    The clients are httpx, httpx2, aiohttp and, for an http:// proxy, urllib
     (_proxy_reading_list). A value without "://" is read as an http:// URL. A value is
     read when it holds no blank or control character, its scheme is one of
     PROXY_SCHEME_TUPLE, no "#", "/" or "?" stands in its user or password (they are
@@ -3602,14 +3614,16 @@ def with_global(function: Callable, name: str, value: object) -> Callable:
                               function.__closure__)
 
 
-def _httpx_no_proxy_pattern_list(proxy_dict: Mapping[str, str]) -> list[tuple[object, bool]]:
-    """Read the proxy variables as httpx does.
+def _httpx_no_proxy_pattern_list(module: types.ModuleType,
+                                 proxy_dict: Mapping[str, str]) -> list[tuple[object, bool]]:
+    """Read the proxy variables as one module of HTTPX_MODULE_TUPLE does.
 
-    httpx's own get_environment_proxies() is run with proxy_dict in place of what
-    urllib.request.getproxies() gives, and its keys are ordered as httpx.Client orders
-    its mounts.
+    The module's own get_environment_proxies() is run with proxy_dict in place of what
+    urllib.request.getproxies() gives, and its keys are ordered as the module's Client
+    orders its mounts.
 
     Args:
+        module: httpx or httpx2.
         proxy_dict: The proxy variables, as urllib.request.getproxies() gives them.
 
     Returns:
@@ -3617,26 +3631,41 @@ def _httpx_no_proxy_pattern_list(proxy_dict: Mapping[str, str]) -> list[tuple[ob
         the order a request is matched against them.
 
     Raises:
-        Exception: Whatever httpx raises for a key it cannot read, which keeps
-            httpx.Client from being made.
+        Exception: Whatever the module raises for a key it cannot read, which keeps its
+            Client from being made.
     """
-    from httpx import _utils as httpx_utils
-
-    read_proxy = httpx_utils.get_environment_proxies
+    module_util = importlib.import_module(f"{module.__name__}._utils")
+    read_proxy = module_util.get_environment_proxies
     mount_dict = types.FunctionType(
         read_proxy.__code__,
         {**read_proxy.__globals__, "getproxies": lambda: dict(proxy_dict)})()
     return [(pattern, mount_dict[pattern.pattern] is not None)
-            for pattern in sorted(httpx_utils.URLPattern(key) for key in mount_dict)]
+            for pattern in sorted(module_util.URLPattern(key) for key in mount_dict)]
 
 
-def _httpx_goes_through_proxy(pattern_list: list[tuple[object, bool]],
-                              url: httpx.URL) -> bool:
-    """Say whether httpx sends a request through a proxy.
+def _httpx_pattern_list_dict(proxy_dict: Mapping[str, str]) -> dict[types.ModuleType,
+                                                                     list[tuple[object, bool]]]:
+    """Read the proxy variables as each module of HTTPX_MODULE_TUPLE does.
 
     Args:
-        pattern_list: What _httpx_no_proxy_pattern_list() returned.
-        url: The request's URL.
+        proxy_dict: The proxy variables, as urllib.request.getproxies() gives them.
+
+    Returns:
+        _httpx_no_proxy_pattern_list() of each module, by the module.
+
+    Raises:
+        Exception: Whatever a module raises for a key it cannot read.
+    """
+    return {module: _httpx_no_proxy_pattern_list(module, proxy_dict)
+            for module in HTTPX_MODULE_TUPLE}
+
+
+def _httpx_goes_through_proxy(pattern_list: list[tuple[object, bool]], url: object) -> bool:
+    """Say whether a module of HTTPX_MODULE_TUPLE sends a request through a proxy.
+
+    Args:
+        pattern_list: What _httpx_no_proxy_pattern_list() returned for the module.
+        url: The request's URL, as the module's URL.
 
     Returns:
         The answer of the first pattern that matches url; False when none does.
@@ -3675,6 +3704,32 @@ def _aiohttp_goes_through_proxy(proxy_dict: Mapping[str, str], url: httpx.URL) -
         return False
 
 
+def _through_proxy_set(proxy_dict: Mapping[str, str],
+                       pattern_list_dict: dict[types.ModuleType, list[tuple[object, bool]]],
+                       endpoint: str) -> set[bool]:
+    """Return what the clients answer to whether a request goes through a proxy.
+
+    Each module of HTTPX_MODULE_TUPLE matches the endpoint, read as its own URL, against
+    its patterns, and litellm's aiohttp transport reads proxy_dict
+    (_aiohttp_goes_through_proxy).
+
+    Args:
+        proxy_dict: The proxy variables, as urllib.request.getproxies() gives them.
+        pattern_list_dict: _httpx_pattern_list_dict() of proxy_dict.
+        endpoint: The request's URL.
+
+    Returns:
+        The answers: one value when every client answers alike.
+
+    Raises:
+        Exception: Whatever a client's reading raises.
+    """
+    answer_set = {_httpx_goes_through_proxy(pattern_list, module.URL(endpoint))
+                  for module, pattern_list in pattern_list_dict.items()}
+    answer_set.add(_aiohttp_goes_through_proxy(proxy_dict, httpx.URL(endpoint)))
+    return answer_set
+
+
 def _no_proxy_entry_kind(entry: str) -> str:
     """Name the kind of a NO_PROXY entry, a key of _NO_PROXY_ENTRY_TEXT_DICT.
 
@@ -3682,10 +3737,12 @@ def _no_proxy_entry_kind(entry: str) -> str:
         entry: The entry, without the blanks around it.
 
     Returns:
-        "scheme", "port", "dot" or "other".
+        "scheme", "network", "port", "dot" or "other".
     """
     if "://" in entry:
         return "scheme"
+    if "/" in entry:
+        return "network"
     if entry.startswith("["):
         has_port = "]:" in entry
     else:
@@ -3699,16 +3756,16 @@ def _no_proxy_entry_kind(entry: str) -> str:
     return "dot" if entry.startswith(".") else "other"
 
 
-def _no_proxy_entry_text(proxy_dict: Mapping[str, str], url: httpx.URL) -> str:
-    """Name the kind of NO_PROXY entry httpx and aiohttp read differently for a request.
+def _no_proxy_entry_text(proxy_dict: Mapping[str, str], endpoint: str) -> str:
+    """Name the kind of NO_PROXY entry the clients read differently for a request.
 
-    How to write it instead is named with it. Each entry is read alone, by both clients.
-    When none is read differently alone, the entries are read differently together: "*"
-    among them, or another kind.
+    How to write it instead is named with it. Each entry is read alone, by every client
+    (_through_proxy_set). When none is read differently alone, the entries are read
+    differently together: "*" among them, or another kind.
 
     Args:
         proxy_dict: The proxy variables, as urllib.request.getproxies() gives them.
-        url: The request's URL.
+        endpoint: The request's URL.
 
     Returns:
         "<kind>: <how to write it>", from _NO_PROXY_ENTRY_TEXT_DICT.
@@ -3717,8 +3774,8 @@ def _no_proxy_entry_text(proxy_dict: Mapping[str, str], url: httpx.URL) -> str:
     kind = "star" if "*" in entry_list else "other"
     for entry in entry_list:
         entry_dict = {**proxy_dict, "no": entry}
-        if (_httpx_goes_through_proxy(_httpx_no_proxy_pattern_list(entry_dict), url)
-                != _aiohttp_goes_through_proxy(entry_dict, url)):
+        if len(_through_proxy_set(entry_dict, _httpx_pattern_list_dict(entry_dict),
+                                  endpoint)) > 1:
             kind = _no_proxy_entry_kind(entry)
             break
     entry_text, write_text = _NO_PROXY_ENTRY_TEXT_DICT[kind]
@@ -3726,13 +3783,13 @@ def _no_proxy_entry_text(proxy_dict: Mapping[str, str], url: httpx.URL) -> str:
 
 
 def no_proxy_error(no_proxy: str, api_base: str, https_proxy: str = "") -> str:
-    """Say what keeps two clients from reading the hosts reached without a proxy alike.
+    """Say what keeps the clients from reading the hosts reached without a proxy alike.
 
-    The clients are httpx and aiohttp. Each client's own reading
-    (_httpx_no_proxy_pattern_list, _aiohttp_goes_through_proxy) is asked whether a
-    request to each endpoint of model_endpoint_dict() goes through the proxy. The value
-    is refused when httpx cannot read an entry, with a proxy set or not, and when the
-    two answer differently for an endpoint.
+    The clients are httpx, httpx2 and aiohttp. Each client's own reading
+    (_through_proxy_set) is asked whether a request to each endpoint of
+    model_endpoint_dict() goes through the proxy. The value is refused when a module of
+    HTTPX_MODULE_TUPLE raises for an entry (_httpx_pattern_list_dict), with a proxy set
+    or not, and when the clients answer differently for an endpoint.
 
     Examples:
         "localhost,llm.corp.example", "http://llm.corp.example:8080/v1" -> ""
@@ -3747,31 +3804,33 @@ def no_proxy_error(no_proxy: str, api_base: str, https_proxy: str = "") -> str:
             environment gives; "" keeps that one.
 
     Returns:
-        "" when they read it alike, or when httpx reads it and no proxy is set.
-        Otherwise why not, in one sentence that holds nothing of the value.
+        "" when they read it alike, or when no module of HTTPX_MODULE_TUPLE raises for
+        it and no proxy is set. Otherwise why not, in one sentence that holds nothing
+        of the value.
     """
     proxy_dict = urllib.request.getproxies()
     if https_proxy:
         proxy_dict["https"] = https_proxy
     proxy_dict["no"] = no_proxy
     try:
-        pattern_list = _httpx_no_proxy_pattern_list(proxy_dict)
+        pattern_list_dict = _httpx_pattern_list_dict(proxy_dict)
     except Exception:
         return ("holds an entry not every HTTP client of this tool can read: write each "
-                "host in ASCII, and an IPv6 address without '[' and ']'")
+                "host in ASCII, an IPv6 address without '[' and ']', and no network "
+                "(address/prefix)")
     if not any(proxy_dict.get(key) for key in _PROXY_KEY_TUPLE):
         return ""
     for name, endpoint in model_endpoint_dict(api_base).items():
         try:
-            url = httpx.URL(endpoint)
+            for module in HTTPX_MODULE_TUPLE:
+                module.URL(endpoint)
         except Exception:
             continue
         # A reading that cannot be made at all refuses the value, its error left out
         try:
-            if (_httpx_goes_through_proxy(pattern_list, url)
-                    == _aiohttp_goes_through_proxy(proxy_dict, url)):
+            if len(_through_proxy_set(proxy_dict, pattern_list_dict, endpoint)) == 1:
                 continue
-            entry_text = _no_proxy_entry_text(proxy_dict, url)
+            entry_text = _no_proxy_entry_text(proxy_dict, endpoint)
         except Exception:
             return ("cannot be read by every HTTP client of this tool: write each host "
                     "alone, in ASCII, separated by commas")

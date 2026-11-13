@@ -13,6 +13,7 @@ import subprocess
 import sys
 
 import httpx
+import httpx2
 import pytest
 import yarl
 
@@ -1477,10 +1478,24 @@ def test_a_proxy_s_url_a_client_of_this_tool_cannot_read_is_said_without_its_val
 def test_an_error_of_any_client_s_reading_is_said_in_a_set_sentence(monkeypatch, error,
                                                                      reading_name):
     """Whatever a reading raises, the sentence holds nothing of the error's text."""
-    def fail(url):
+    def fail(*arg_tuple):
         raise error
     monkeypatch.setattr(config, reading_name, fail)
     assert config.proxy_url_error("http://svcname:secretpw@ctloom-proxy.corp.example:3128") == (
+        "cannot be read by every HTTP client of this tool: write it as http://host:port")
+
+
+@pytest.mark.parametrize("module", [httpx, httpx2])
+def test_a_proxy_s_url_either_httpx_module_cannot_read_is_refused(monkeypatch, module):
+    """A reading that fails for one module alone refuses the URL."""
+    read = config._httpx_proxy_reading
+
+    def read_with_other(reading_module, url):
+        if reading_module is module:
+            raise ValueError("svcname")
+        return read(reading_module, url)
+    monkeypatch.setattr(config, "_httpx_proxy_reading", read_with_other)
+    assert config.proxy_url_error("http://ctloom-proxy.corp.example:3128") == (
         "cannot be read by every HTTP client of this tool: write it as http://host:port")
 
 
@@ -1538,16 +1553,20 @@ def test_a_proxy_variable_the_clients_read_in_place_of_another_is_the_one_looked
     assert text.startswith("Http_Proxy points at a SOCKS proxy") and "secretpw" not in text
 
 
-def _client_goes_through_proxy(endpoint):
-    """Ask a real httpx.Client and litellm's real aiohttp transport, under the
-    environment as it is, whether a request to endpoint goes through a proxy."""
+def _client_through_proxy_set(endpoint):
+    """Ask a real httpx.Client, a real httpx2.Client and litellm's real aiohttp
+    transport, under the environment as it is, whether a request to endpoint goes
+    through a proxy, and return their answers."""
     from litellm.llms.custom_httpx.aiohttp_transport import LiteLLMAiohttpTransport
 
-    url = httpx.URL(endpoint)
-    with httpx.Client() as client:
-        httpx_answer = client._transport_for_url(url) is not client._transport
+    answer_set = set()
+    for module in (httpx, httpx2):
+        url = module.URL(endpoint)
+        with module.Client() as client:
+            answer_set.add(client._transport_for_url(url) is not client._transport)
     transport = LiteLLMAiohttpTransport(client=lambda: None)
-    return httpx_answer, transport._proxy_from_env(url) is not None
+    answer_set.add(transport._proxy_from_env(httpx.URL(endpoint)) is not None)
+    return answer_set
 
 
 @pytest.mark.parametrize("no_proxy, api_base", [
@@ -1559,7 +1578,7 @@ def _client_goes_through_proxy(endpoint):
     ("::1", "http://[::1]:8080/v1"), ("llm.corp.example:443", "https://llm.corp.example/v1"),
     ("https://llm.corp.example", "http://llm.corp.example:8080/v1"),
     ("localhost", ""), ("*", ""), ("10.0.0.0/8,.corp.example", "")])
-def test_a_no_proxy_both_clients_of_the_model_calls_read_alike_is_taken(
+def test_a_no_proxy_every_client_of_the_model_calls_reads_alike_is_taken(
         monkeypatch, no_proxy, api_base):
     _clear_proxy_variable(monkeypatch)
     _set_model(monkeypatch, "ctloom-unknown-model")
@@ -1567,9 +1586,8 @@ def test_a_no_proxy_both_clients_of_the_model_calls_read_alike_is_taken(
     monkeypatch.setenv("HTTP_PROXY", "http://ctloom-proxy.corp.example:3128")
     assert config.no_proxy_error(no_proxy, api_base) == ""
     monkeypatch.setenv("NO_PROXY", no_proxy)
-    httpx_answer, aiohttp_answer = _client_goes_through_proxy(
-        api_base or "https://ctloom-endpoint.invalid/")
-    assert httpx_answer == aiohttp_answer
+    assert len(_client_through_proxy_set(
+        api_base or "https://ctloom-endpoint.invalid/")) == 1
 
 
 @pytest.mark.parametrize("no_proxy, api_base, kind", [
@@ -1586,7 +1604,11 @@ def test_a_no_proxy_both_clients_of_the_model_calls_read_alike_is_taken(
     ("http://llm.corp.example", "http://llm.corp.example:8080/v1",
      "an entry with a scheme (scheme://host)"),
     ("localhost,http://llm.corp.example", "http://llm.corp.example/v1",
-     "an entry with a scheme (scheme://host)")])
+     "an entry with a scheme (scheme://host)"),
+    ("10.0.0.0/8", "http://10.1.2.3:8080/v1",
+     "an entry that names a network (address/prefix)"),
+    ("localhost,192.168.0.0/16", "http://192.168.1.5:8080/v1",
+     "an entry that names a network (address/prefix)")])
 def test_a_no_proxy_the_clients_of_the_model_calls_read_apart_is_said_by_its_entry(
         monkeypatch, no_proxy, api_base, kind):
     """With the kind of entry and the endpoint's name, nothing of the value; the real
@@ -1600,13 +1622,14 @@ def test_a_no_proxy_the_clients_of_the_model_calls_read_apart_is_said_by_its_ent
     assert error.startswith(f"is not read alike by every HTTP client of this tool for "
                             f"{name}, ")
     assert kind in error and "corp" not in error and "127.0" not in error
+    assert "10." not in error and "192.168" not in error
     monkeypatch.setenv("NO_PROXY", no_proxy)
-    httpx_answer, aiohttp_answer = _client_goes_through_proxy(
-        api_base or "https://ctloom-endpoint.invalid/")
-    assert httpx_answer != aiohttp_answer
+    assert len(_client_through_proxy_set(
+        api_base or "https://ctloom-endpoint.invalid/")) > 1
 
 
-@pytest.mark.parametrize("no_proxy", ["[::1]", "localhost,bücher.example"])
+@pytest.mark.parametrize("no_proxy", ["[::1]", "localhost,bücher.example",
+                                      "localhost,fd00::/8"])
 @pytest.mark.parametrize("proxy", ["http://ctloom-proxy.corp.example:3128", ""])
 def test_a_no_proxy_httpx_cannot_read_is_refused(monkeypatch, no_proxy, proxy):
     """httpx.Client cannot be made under it, with a proxy or without, so every call made
@@ -1614,8 +1637,9 @@ def test_a_no_proxy_httpx_cannot_read_is_refused(monkeypatch, no_proxy, proxy):
     _clear_proxy_variable(monkeypatch)
     if proxy:
         monkeypatch.setenv("HTTPS_PROXY", proxy)
-    assert config.no_proxy_error(no_proxy, "http://llm.corp.example/v1").startswith(
-        "holds an entry not every HTTP client of this tool can read")
+    assert config.no_proxy_error(no_proxy, "http://llm.corp.example/v1") == (
+        "holds an entry not every HTTP client of this tool can read: write each host in "
+        "ASCII, an IPv6 address without '[' and ']', and no network (address/prefix)")
     monkeypatch.setenv("NO_PROXY", no_proxy)
     assert config.proxy_error_text().startswith(
         "NO_PROXY holds an entry not every HTTP client of this tool can read")
@@ -1682,8 +1706,7 @@ def test_a_no_proxy_is_checked_against_the_endpoint_litellm_calls(
     assert "corp" not in error and "127.0" not in error
     assert config.no_proxy_error(f"localhost,{httpx.URL(endpoint).host}", "") == ""
     monkeypatch.setenv("NO_PROXY", f"localhost,{host_port}")
-    httpx_answer, aiohttp_answer = _client_goes_through_proxy(endpoint)
-    assert httpx_answer != aiohttp_answer
+    assert len(_client_through_proxy_set(endpoint)) > 1
 
 
 def test_an_endpoint_litellm_does_not_tell_is_stood_for(monkeypatch):

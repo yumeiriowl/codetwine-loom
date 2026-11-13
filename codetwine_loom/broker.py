@@ -33,7 +33,6 @@ import urllib.parse
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
-import httpx
 import litellm
 
 from codetwine_loom import config, providercall, tokencount, websearch
@@ -457,6 +456,11 @@ def _cause_list(error: BaseException) -> list[BaseException]:
     return cause_list
 
 
+# What the modules of config.HTTPX_MODULE_TUPLE raise for a request no response came
+# back to
+_REQUEST_ERROR_TUPLE = tuple(module.RequestError for module in config.HTTPX_MODULE_TUPLE)
+
+
 def _is_no_answer(cause: BaseException) -> bool:
     """Say whether one cause shows that a request ended with no HTTP response.
 
@@ -465,11 +469,12 @@ def _is_no_answer(cause: BaseException) -> bool:
 
     Returns:
         True for the failure of a system call (an OSError that carries an errno), for
-        what the HTTP client raises for a request no response came back to
-        (httpx.RequestError), and for a connection urllib could not make in time (a
-        urllib.error.URLError whose reason is a TimeoutError).
+        what an HTTP client raises for a request no response came back to (the
+        RequestError of a module of config.HTTPX_MODULE_TUPLE), and for a connection
+        urllib could not make in time (a urllib.error.URLError whose reason is a
+        TimeoutError).
     """
-    return isinstance(cause, httpx.RequestError) \
+    return isinstance(cause, _REQUEST_ERROR_TUPLE) \
         or (isinstance(cause, OSError) and cause.errno is not None) \
         or (isinstance(cause, urllib.error.URLError)
             and isinstance(cause.reason, TimeoutError))
