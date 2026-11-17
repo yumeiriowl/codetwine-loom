@@ -1,0 +1,9 @@
+{
+ "command": [
+  "go",
+  "test",
+  "./..."
+ ],
+ "returncode": 1,
+ "output": "FAIL\texample.com/calc [setup failed]\nFAIL\texample.com/calc/calc [setup failed]\nFAIL\texample.com/calc/util [setup failed]\nFAIL\n# example.com/calc\npackage example.com/calc\n\timports example.com/calc/calc from main.go\n\timports example.com/calc/util from calc.go\n\timports example.com/calc/calc from util.go: import cycle not allowed\n# example.com/calc/calc\npackage example.com/calc\n\timports example.com/calc/calc from main.go\n\timports example.com/calc/util from calc.go\n\timports example.com/calc/calc from util.go: import cycle not allowed\n# example.com/calc/util\npackage example.com/calc\n\timports example.com/calc/calc from main.go\n\timports example.com/calc/util from calc.go\n\timports example.com/calc/calc from util.go: import cycle not allowed\n"
+}

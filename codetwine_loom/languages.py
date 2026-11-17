@@ -534,6 +534,46 @@ _CS = LangConfig(
 
 """),))
 
+_GO = LangConfig(
+    need_root_project=True,
+    exclude_type_set=frozenset({"const_spec", "var_spec", "field_declaration"}),
+    stopword_set=frozenset("""
+    break case chan const continue default defer else fallthrough for func go goto if
+    import interface map package range return select struct switch type var any bool
+    byte error float32 float64 int int8 int16 int32 int64 rune string uint uint8 uint16
+    uint32 uint64 uintptr true false nil iota append cap close copy delete len make new
+    panic print println recover err ctx
+    """.split()),
+    test_command_tuple=("go", "test", "./..."),
+    test_path="", test_target="none",
+    test_name_tuple=("*_test.go",),
+    run_command_tuple=("go", "run"),
+    run_note=("go run takes the package to run as its first argument: "
+              "run_project([\".\"]) runs the main package at the top, and "
+              "run_project([\"./cmd/app\", \"--flag\"]) the one in cmd/app with --flag."),
+    dep_file_tuple=("go.mod", "go.sum", "go.work", "go.work.sum"),
+    # go takes no module from the network with the proxy off
+    offline_env_tuple=(("GOPROXY", "off"),),
+    check_command_tuple=("ctloom-check-go",),
+    compile_error_line="#error",
+    value_type_set=frozenset({"const_spec", "var_spec"}),
+    # A function literal or a function type
+    function_value_pattern=r"\bfunc\s*[(\[]",
+    comment_mark_tuple=_C_COMMENT_MARK_TUPLE,
+    # The receiver type of a method, the interface of a method and the struct of a field
+    name_prefix_pattern=r"^[^.\s]+\.",
+    edit_note_tuple=(("", """## Go source
+
+- The .go files of one directory are one package and see each other's names without
+  an import. A new file starts with the package clause the other files of its directory
+  have, and a name starts with an upper-case letter to be used from another package.
+- A test is a function TestXxx(t *testing.T) in a file whose name ends in _test.go, in
+  the directory of the code it tests. A test in any other file never runs.
+- An import path is the module path of go.mod followed by the directory of the
+  package. An import or a variable that is not used does not build.
+
+"""),))
+
 # R scripts, and the R code chunks of R Markdown and Quarto documents. ctloom-test-r
 # runs the testthat tests of a package (a DESCRIPTION file at the top) or of the scripts
 # under tests/testthat, and takes test files
@@ -568,7 +608,7 @@ LANG_DICT: dict[str, LangConfig] = {
     "hxx": _CPP, "rs": _RS, "sql": _SQL,
     "cbl": _CBL, "cob": _CBL, "cpy": _CBL, "bms": _BMS,
     "jcl": _JCL, "prc": _JCL, "proc": _JCL, "csd": _CSD, "cs": _CS,
-    "r": _R, "rmd": _R, "qmd": _R,
+    "go": _GO, "r": _R, "rmd": _R, "qmd": _R,
 }
 
 
@@ -742,6 +782,7 @@ LANG_NAME_DICT: dict[str, str] = {
     "hh": "C++", "hxx": "C++", "rs": "Rust", "sql": "SQL",
     "cbl": "COBOL", "cob": "COBOL", "cpy": "COBOL", "bms": "BMS",
     "jcl": "JCL", "prc": "JCL", "proc": "JCL", "csd": "CICS CSD", "cs": "C#",
+    "go": "Go",
     "r": "R", "rmd": "R Markdown", "qmd": "Quarto",
 }
 
@@ -760,6 +801,7 @@ PATH_EXAMPLE_DICT: dict[str, str] = {
     "cbl": "src/CUSTUPD.cbl", "cob": "src/custupd.cob", "cpy": "copy/CUSTREC.cpy",
     "bms": "bms/CUSTMAP.bms", "jcl": "jcl/NIGHTLY.jcl", "prc": "proc/REPROC.prc",
     "proc": "proc/REPROC.proc", "csd": "csd/APP.csd", "cs": "src/App/Config.cs",
+    "go": "internal/config/config.go",
     "r": "R/config.R", "rmd": "vignettes/config.Rmd", "qmd": "docs/config.qmd",
 }
 
@@ -797,6 +839,7 @@ SIGNATURE_EXAMPLE_DICT: dict[str, str] = {
     "proc": "//REPROC  PROC HLQ=PROD",
     "csd": "Define Transaction(TX01) Group(APPGRP)",
     "cs": "public Config LoadConfig(string key)",
+    "go": "func LoadConfig(key string) (*Config, error) {",
     "r": "load_config <- function(key, default = NULL) {",
     "rmd": "load_config <- function(key, default = NULL) {",
     "qmd": "load_config <- function(key, default = NULL) {",
@@ -820,6 +863,7 @@ RUN_EXAMPLE_DICT: dict[str, str] = {
     "proc": "zowe zos-jobs submit local-file jcl/NIGHTLY.jcl",
     "csd": "zowe zos-jobs submit local-file jcl/CSDUPD.jcl",
     "cs": "dotnet run --project src/App",
+    "go": "go run ./cmd/app",
     "r": "Rscript R/main.R", "rmd": "Rscript -e 'rmarkdown::render(\"report.Rmd\")'",
     "qmd": "quarto render report.qmd",
 }
@@ -835,6 +879,7 @@ DEF_EXAMPLE_DICT: dict[str, str] = {
     "sql": "load_config", "cbl": "1000-LOAD-CONFIG", "cob": "1000-LOAD-CONFIG",
     "cpy": "CONFIG-RECORD", "bms": "CFGMAPI", "jcl": "NIGHTLY", "prc": "REPROC",
     "proc": "REPROC", "csd": "TX01", "cs": "LoadConfig",
+    "go": "LoadConfig",
     "r": "load_config", "rmd": "load_config", "qmd": "load_config",
 }
 

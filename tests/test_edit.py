@@ -1852,6 +1852,14 @@ def test_a_run_that_was_refused_drops_the_earlier_verdict(repo, fake_test_comman
 # rs_B_warning: a warning of the library, then an error in an integration test;
 # rs_R_print: a failing test that printed a line starting with "warning: ";
 # py_G_strict: a project whose pytest settings turn every warning into an error;
+# go_R_sub: a failing subtest; go_R_panic: a test that panics; go_R_exit: a TestMain that
+# exits with 3; go_B_source: a source that does not build; go_B_vet: a test go vet
+# refuses; go_B_import: an import path that names no package; go_N_empty: a test file
+# with no test; go_B_cycle: an import cycle; go_B_package: two package clauses in one
+# directory; go_B_clause: a file with no package clause; go_B_internal: an import of
+# another tree's internal package; go_B_mod: a go.mod that does not parse;
+# go_X_version: a go.mod that asks for a newer Go than the one run; go_X2_sum: a module
+# with no line in go.sum;
 # js_*_mocha: npm test running mocha 11.7.5, js_L_mocha running eslint 9.39.1 first, which
 # warns, and then mocha; js_*_bun: npm test running bun test 1.4.4, js_R_bun_bail with
 # --bail and the failing test first, js_R_bun_load with a second test file importing a
@@ -1905,6 +1913,13 @@ _GOLDEN_STATUS = {
     "cs_N": "did not run", "cs_X": "did not run", "cs_X2": "did not run",
     "cs_G_mtp": "passed", "cs_R_mtp": "failed", "cs_B_mtp": "failed",
     "cs_N_mtp": "did not run",
+    "go_G": "passed", "go_R": "failed", "go_B": "failed",
+    "go_N": "did not run", "go_X": "did not run", "go_X2": "did not run",
+    "go_R_sub": "failed", "go_R_panic": "failed", "go_R_exit": "failed",
+    "go_B_source": "failed", "go_B_vet": "failed", "go_B_import": "failed",
+    "go_N_empty": "did not run", "go_X_version": "did not run", "go_X2_sum": "did not run",
+    "go_B_cycle": "failed", "go_B_package": "failed", "go_B_clause": "failed",
+    "go_B_internal": "failed", "go_B_mod": "failed",
     "r_G": "passed", "r_G_file": "passed", "r_R": "failed", "r_B": "failed",
     "r_N": "did not run", "r_N_empty": "did not run", "r_X": "did not run",
     "r_X2": "did not run",
@@ -1971,6 +1986,32 @@ def test_mocha_names_its_failing_tests_once_and_eslint_s_summary_is_no_test(
     for name in ("js_G_mocha", "js_R_mocha", "js_L_mocha"):
         output = json.loads((_GOLDEN_DIR / f"{name}.json").read_text())["output"]
         assert edit._ran_count(output, "js") == 2
+
+
+@pytest.mark.parametrize("name, failed", [
+    ("go_G", []),
+    ("go_R", ["TestSub", "example.com/calc/calc"]),
+    ("go_R_sub", ["TestTable", "TestTable/two_words", "example.com/calc/calc"]),
+    ("go_R_panic", ["TestPanic", "example.com/calc/calc"]),
+    ("go_R_exit", ["example.com/calc/calc"]),
+    ("go_B", ["example.com/calc/calc"]),
+    ("go_B_source", ["example.com/calc", "example.com/calc/calc"]),
+    ("go_B_import", ["example.com/calc"]),
+    ("go_B_cycle", ["example.com/calc", "example.com/calc/calc", "example.com/calc/util"]),
+    ("go_B_package", ["example.com/calc", "example.com/calc/calc"]),
+    ("go_B_clause", ["example.com/calc", "example.com/calc/calc"]),
+    ("go_B_internal", ["example.com/calc", "example.com/calc/calc"]),
+    ("go_B_mod", []),
+    ("go_X2", [])])
+def test_go_names_its_failing_tests_and_the_packages_that_do_not_build(
+        as_language, golden_test_command, name, failed):
+    """go test's "--- FAIL:" lines name the tests and subtests, and its "FAIL" line the
+    package they are in or the package that does not build or set up from its own
+    sources; a package whose tests passed, or that a module that could not be fetched
+    held back, names nothing."""
+    as_language("go")
+    golden_test_command(name)
+    assert edit.run_test()["failed"] == failed
 
 
 @pytest.mark.parametrize("name, failed, ran, is_fail_stop", [
@@ -2845,7 +2886,8 @@ def test_a_line_for_a_stop_before_the_tests_says_nothing_of_a_run_that_reached_a
 
 # The primary language each captured failing run is read as in place of its own
 _OTHER_LANGUAGE_DICT = {"kt": "java", "java": "kt", "py": "js", "js": "py", "ts": "rs",
-                        "rs": "cs", "cs": "r", "r": "c", "c": "cpp", "cpp": "c"}
+                        "rs": "cs", "cs": "r", "r": "c", "c": "cpp", "cpp": "c",
+                        "go": "rs"}
 
 
 @pytest.mark.parametrize("name", sorted(n for n in _GOLDEN_STATUS
@@ -5089,7 +5131,7 @@ def test_a_check_that_fails_with_findings_or_ends_clean_without_any_is_counted(
 def test_each_language_with_a_compile_free_test_command_has_a_default_check():
     has_check_set = {ALIAS_DICT.get(ext, ext) for ext, lang_config in LANG_DICT.items()
                      if lang_config.check_command_tuple}
-    assert has_check_set == {"py", "js", "ts", "c", "cpp", "rs", "cbl", "cs", "r"}
+    assert has_check_set == {"py", "js", "ts", "c", "cpp", "rs", "cbl", "cs", "go", "r"}
 
 
 def test_the_python_default_finds_a_name_that_is_not_defined(monkeypatch, tmp_path):
@@ -5164,6 +5206,117 @@ def test_the_rust_check_finds_nothing_without_a_manifest(cargo_project, monkeypa
     (cargo_project / "Cargo.toml").unlink()
     monkeypatch.setenv("CARGO_STATUS", "101")
     monkeypatch.setenv("CARGO_OUT", "src/lib.rs:6:9: error[E0425]: x")
+    assert _RUN_CHECK() == {}
+
+
+# == The Go default check (sandbox/check-go.sh) ===============
+_CHECK_GO = pathlib.Path(__file__).resolve().parent.parent / "sandbox" / "check-go.sh"
+
+
+@pytest.fixture
+def go_project(tmp_path, monkeypatch):
+    """A Go module and a stand-in go on PATH that prints $GO_OUT and exits with
+    $GO_STATUS."""
+    (tmp_path / "go.mod").write_text("module example.com/calc\n")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    (bin_dir / "go").write_text('#!/bin/sh\nprintf "%s\\n" "$GO_OUT" >&2\n'
+                                'exit "$GO_STATUS"\n')
+    (bin_dir / "go").chmod(0o755)
+    monkeypatch.setattr(config, "PROJECT_DIR", str(tmp_path))
+    monkeypatch.setattr(config, "CHECK_COMMAND", [str(_CHECK_GO)])
+    monkeypatch.setenv("PATH", f"{bin_dir}:/usr/bin:/bin")
+    return tmp_path
+
+
+def test_the_go_check_counts_a_finding_go_prints_twice_once(go_project, monkeypatch):
+    """go vet prints a compile error under the package and again after "vet: ", and the
+    path of a file of the top directory after "./"."""
+    monkeypatch.setenv("GO_STATUS", "1")
+    monkeypatch.setenv("GO_OUT", "\n".join([
+        "# example.com/calc/calc", "calc/calc.go:7:37: undefined: c",
+        "# example.com/calc/calc", "# [example.com/calc/calc]",
+        "vet: calc/calc.go:7:37: undefined: c",
+        "# example.com/calc", "./main.go:9:2: fmt.Printf format %d has arg \"x\" of wrong "
+        "type string"]))
+    assert _RUN_CHECK() == {
+        "calc/calc.go: undefined: c": 1,
+        "main.go: fmt.Printf format %d has arg \"x\" of wrong type string": 1}
+
+
+# What go vet ./... 1.27.4 printed over a module whose sources fail it before the
+# analysis, with the module's directory as {root}, and the finding each is counted as
+_GO_VET_SETUP_FAIL_LIST = [
+    ("package example.com/calc\n"
+     "\timports example.com/calc/calc from main.go\n"
+     "\timports example.com/calc/util from calc.go\n"
+     "\timports example.com/calc/calc from util.go: import cycle not allowed",
+     "go.mod: import cycle not allowed: example.com/calc/calc -> example.com/calc/util"
+     " -> example.com/calc/calc"),
+    ("package example.com/calc/a\n"
+     "\timports example.com/calc/b from a_test.go\n"
+     "\timports example.com/calc/a from b.go: import cycle not allowed in test",
+     "go.mod: import cycle not allowed in test: example.com/calc/a -> example.com/calc/b"
+     " -> example.com/calc/a"),
+    ("main.go:6:2: found packages calc (calc.go) and other (other.go) in {root}/calc",
+     "calc/other.go: found packages calc (calc.go) and other (other.go) in calc"),
+    ("found packages calc (calc.go) and other (other.go) in {root}/calc",
+     "calc/other.go: found packages calc (calc.go) and other (other.go) in calc"),
+    ("found packages calc (a.go) and other (b.go) in {root}",
+     "b.go: found packages calc (a.go) and other (b.go) in ."),
+    ("calc/mul.go:1:1: expected 'package', found 'func'",
+     "calc/mul.go: expected 'package', found 'func'"),
+    ("package example.com/calc/calc\n"
+     "\tcalc/calc.go:3:8: use of internal package example.com/calc/util/internal/half not "
+     "allowed",
+     "calc/calc.go: use of internal package example.com/calc/util/internal/half not allowed"),
+    ("main.go:6:2: no required module provides package example.com/calc/clac; to add it:\n"
+     "\tgo get example.com/calc/clac",
+     "main.go: no required module provides package example.com/calc/clac; to add it:"),
+    ("go: errors parsing go.mod:\ngo.mod:5: usage: require module/path v1.2.3",
+     "go.mod: usage: require module/path v1.2.3")]
+
+
+@pytest.mark.parametrize("go_out, finding", _GO_VET_SETUP_FAIL_LIST)
+def test_the_go_check_counts_a_source_that_fails_before_the_analysis(go_project, monkeypatch,
+                                                                    go_out, finding):
+    """An import cycle, two package clauses in one directory, a file with no package
+    clause, an import of an internal package or of a path no module provides, and a
+    go.mod that does not parse are each one finding of a path under the module."""
+    monkeypatch.setenv("GO_STATUS", "1")
+    monkeypatch.setenv("GO_OUT", go_out.replace("{root}", str(go_project)))
+    assert _RUN_CHECK() == {finding: 1}
+
+
+def test_the_go_check_finds_nothing_in_a_tree_that_builds(go_project, monkeypatch):
+    monkeypatch.setenv("GO_STATUS", "0")
+    monkeypatch.setenv("GO_OUT", "")
+    assert _RUN_CHECK() == {}
+
+
+@pytest.mark.parametrize("go_out", [
+    "go: downloading github.com/google/uuid v1.6.0\n"
+    "calc/calc.go:3:8: module lookup disabled by GOPROXY=off",
+    "calc/calc.go:3:8: missing go.sum entry for module providing package "
+    "github.com/google/uuid (imported by example.com/calc/calc); to add:",
+    "go: go.mod requires go >= 1.99 (running go 1.27.4; GOTOOLCHAIN=local)"])
+def test_the_go_check_does_not_run_where_go_fails_before_the_sources(go_project, monkeypatch,
+                                                                     go_out):
+    """A module the package cache does not hold says nothing about the change."""
+    monkeypatch.setenv("GO_STATUS", "1")
+    monkeypatch.setenv("GO_OUT", go_out)
+    assert _RUN_CHECK() is None
+
+
+def test_the_go_check_does_not_run_without_go(go_project, monkeypatch):
+    (go_project / "bin" / "go").unlink()
+    assert _RUN_CHECK() is None
+
+
+def test_the_go_check_finds_nothing_without_a_module(go_project, monkeypatch):
+    (go_project / "go.mod").unlink()
+    monkeypatch.setenv("GO_STATUS", "1")
+    monkeypatch.setenv("GO_OUT", "calc/calc.go:7:37: undefined: c")
     assert _RUN_CHECK() == {}
 
 

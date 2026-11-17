@@ -39,7 +39,7 @@ docker build --build-arg CA_PEM="$(cat corp-ca.pem)" --build-arg HTTPS_PROXY="$H
 podman build --build-arg DOTNET_CHANNEL="11.0 10.0 8.0" -t codetwine-loom .
 ```
 
-`TOOLCHAIN` takes the values in the first column below; the default is `c cbl cs java js kt r rs ts`. `py` and `sql` are accepted and add nothing, and any other value stops the build. Every image holds Python 3.12, git and `uv`. The tool's own dependencies are installed at the versions in `uv.lock`, and the build fails when `pyproject.toml` or `uv.toml` disagrees with it. The base images (`python:3.12-slim`, `ghcr.io/astral-sh/uv:latest`) are taken from the host when it has them, and the uv in the image must be 0.11.8 or later. A rebuild with the same arguments reuses cached steps. To renew the base images and packages, build with `podman build --no-cache --pull=newer` (`docker build --no-cache --pull`).
+`TOOLCHAIN` takes the values in the first column below; the default is `c cbl cs go java js kt r rs ts`. `py` and `sql` are accepted and add nothing, and any other value stops the build. Every image holds Python 3.12, git and `uv`. The tool's own dependencies are installed at the versions in `uv.lock`, and the build fails when `pyproject.toml` or `uv.toml` disagrees with it. The base images (`python:3.12-slim`, `ghcr.io/astral-sh/uv:latest`) are taken from the host when it has them, and the uv in the image must be 0.11.8 or later. A rebuild with the same arguments reuses cached steps. To renew the base images and packages, build with `podman build --no-cache --pull=newer` (`docker build --no-cache --pull`).
 
 | `TOOLCHAIN` | What it installs | Commands it adds |
 |---|---|---|
@@ -49,6 +49,7 @@ podman build --build-arg DOTNET_CHANNEL="11.0 10.0 8.0" -t codetwine-loom .
 | `c` / `cpp` / `h` / `cc` / `cxx` / `hpp` / `hh` / `hxx` | GCC (`build-essential`), CMake, Ninja, autotools, `pkgconf`, bison and flex | `ctloom-check-c`, `ctloom-test-c`, `ctloom-run-c` |
 | `rs` | Rust (`RUST_VERSION`, default `1.99.1`) with GCC, `make`, `pkg-config` and `libssl-dev`. `rust-toolchain.toml` is not read | `ctloom-check-rs` |
 | `cs` | The .NET SDK (`DOTNET_CHANNEL`, several separated by spaces; default `11.0 10.0`). Add a version here when `global.json` asks for one the image lacks | `ctloom-check-cs` |
+| `go` | Go (`GO_VERSION`, default `1.27.4`; amd64 and arm64) with GCC for cgo. The image's Go is used whatever version `go.mod` names (`GOTOOLCHAIN=local`) | `ctloom-check-go` |
 | `cbl` (and `cob`, `cpy`, `bms`, `jcl`, `prc`, `proc`, `csd`) | GnuCOBOL | `ctloom-check-cbl` |
 | `r` (and `rmd`, `qmd`) | R, testthat and codetools. `renv.lock` is not read | `ctloom-check-r`, `ctloom-test-r` |
 

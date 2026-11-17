@@ -1,0 +1,9 @@
+{
+ "command": [
+  "go",
+  "test",
+  "./..."
+ ],
+ "returncode": 0,
+ "output": "?   \texample.com/calc\t[no test files]\n?   \texample.com/calc/calc\t[no test files]\n"
+}

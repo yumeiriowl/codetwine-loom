@@ -162,6 +162,13 @@ _FAIL_RE_DICT = _with_alias_dict({
     # VSTest:   Failed Calc.Tests.T.Adds(a: 1) [3 ms] / [< 1 ms]
     # Microsoft.Testing.Platform: failed Calc.Tests.T.Adds (15ms)
     "cs": re.compile(r"^\s*[Ff]ailed (.+) [\[(][<\d][^\])]*[\])]$"),
+    # --- FAIL: TestSub (0.00s) /     --- FAIL: TestTable/two_words (0.00s) (a subtest,
+    # under the line of its test) / FAIL  example.com/calc/calc  0.002s (the package of
+    # the failing tests, or one whose tests ended before they were through) /
+    # FAIL  example.com/calc/calc [build failed] (a package whose sources or tests do
+    # not build)
+    "go": re.compile(r"^\s*--- FAIL: (\S+) \(\d"
+                     r"|^FAIL\t(\S+)(?:\t\d.*| \[build failed\])$"),
     # testthat's check reporter: ── Failure ('test-basic.R:6:3'): add adds ────
     # and ── Error ('test-basic.R:8:3'): add errors ────
     "r": re.compile(r"^── (?:Failure|Error) \('[^']*'\): (.+?) ─+$"),
@@ -499,6 +506,33 @@ TEST_STATUS_DICT = {True: "passed", False: "failed", None: "did not run"}
 # (" 1 fail") is put after, so that it matches only in an output holding _BUN_HEAD_PATTERN
 _ON_BUN_PATTERN = r"\A(?=[\s\S]*?" + _BUN_HEAD_PATTERN + r")[\s\S]*?"
 
+# What go test prints to say it ended before it got to the tests because the module is
+# not set up (_NO_PROJECT_RE_DICT), and because a module it needs could not be fetched
+# (_FETCH_FAIL_RE_DICT)
+_GO_NO_PROJECT_PATTERN = (r"^pattern \S+: directory prefix \S+ does not contain "
+                          r"|^go: go\.mod file not found |^go: go\.mod requires go >= ")
+_GO_FETCH_FAIL_PATTERN = (r": module lookup disabled by GOPROXY=off$"
+                          r"|: missing go\.sum entry for |^go: .*: dial tcp\b")
+
+# go test's line for a package it could not set up for the build, with the package as
+# the group: FAIL  example.com/calc [setup failed]. _GO_SETUP_FAIL_PATTERN is that line in
+# an output that holds no line of _GO_NO_PROJECT_PATTERN or _GO_FETCH_FAIL_PATTERN: a
+# package whose own sources failed it (an import cycle, two package clauses in one
+# directory, a file with no package clause, an import of an internal package or of a
+# path no module provides)
+_GO_SETUP_FAIL_LINE_PATTERN = r"^FAIL\t(\S+) \[setup failed\]$"
+_GO_SETUP_FAIL_PATTERN = (r"\A(?![\s\S]*?(?:" + _GO_NO_PROJECT_PATTERN + r"|"
+                          + _GO_FETCH_FAIL_PATTERN + r"))[\s\S]*?"
+                          + _GO_SETUP_FAIL_LINE_PATTERN)
+
+# go test's line for a package whose tests ran and failed: FAIL  example.com/calc/calc  0.002s
+_GO_PACKAGE_FAIL_PATTERN = r"^FAIL\t\S+\t\d"
+
+# go test failing on the project's own sources: FAIL  example.com/calc/calc [build failed] /
+# go: errors parsing go.mod: / FAIL  example.com/calc [setup failed] (_GO_SETUP_FAIL_PATTERN)
+_GO_BUILD_FAIL_PATTERN = (r"^FAIL\t\S+ \[build failed\]$|^go: errors parsing go\.mod:$|"
+                          + _GO_SETUP_FAIL_PATTERN)
+
 # What a run prints once it got far enough for the exit code to be about the code: the
 # reporter's own summary line, or the build failing on the project's own sources. It is
 # the second of the two things that make a non-zero exit code count as red, the first
@@ -548,6 +582,9 @@ _REPORT_RE_DICT = _with_alias_dict({
     # (Microsoft.Testing.Platform) / src/A.cs(14,25): error CS0117: ...
     "cs": re.compile(r"^Failed!\s+- Failed:|^Test run summary: Failed!|: error CS\d+: ",
                      re.M),
+    # A package whose tests ran and failed (_GO_PACKAGE_FAIL_PATTERN), or the build failing
+    # on the project's own sources (_GO_BUILD_FAIL_PATTERN)
+    "go": re.compile(_GO_PACKAGE_FAIL_PATTERN + r"|" + _GO_BUILD_FAIL_PATTERN, re.M),
     # [ FAIL 1 | WARN 0 | SKIP 0 | PASS 2 ] / ! Failed to load 'R/basic.R' (a source of
     # the package that does not parse)
     "r": re.compile(r"^\[ FAIL [1-9]\d* \| |^! Failed to load '", re.M),
@@ -584,6 +621,8 @@ _FAIL_COUNT_RE_DICT = _with_alias_dict({
     # Failed!  - Failed:     1, Passed: ... (VSTest) /   failed: 1
     # (Microsoft.Testing.Platform)
     "cs": re.compile(r"^Failed!\s+- Failed:\s+[1-9]|^ +failed: [1-9]", re.M),
+    # FAIL  example.com/calc/calc  0.002s
+    "go": re.compile(_GO_PACKAGE_FAIL_PATTERN, re.M),
     # [ FAIL 1 | WARN 0 | SKIP 0 | PASS 2 ]
     "r": re.compile(r"^\[ FAIL [1-9]\d* \| ", re.M),
 })
@@ -614,6 +653,9 @@ _FAIL_EXIT_RE_DICT = _with_alias_dict({
                      re.M),
     # src/A.cs(14,25): error CS0117: ...
     "cs": re.compile(r": error CS\d+: ", re.M),
+    # FAIL  example.com/calc/calc [build failed] / go: errors parsing go.mod: /
+    # FAIL  example.com/calc [setup failed] (_GO_BUILD_FAIL_PATTERN)
+    "go": re.compile(_GO_BUILD_FAIL_PATTERN, re.M),
     # ! Failed to load 'R/basic.R'
     "r": re.compile(r"^! Failed to load '", re.M),
 })
@@ -663,6 +705,13 @@ _NO_TEST_RE_DICT = _with_alias_dict({
     "cs": (re.compile(r"^(?:No test is available in |Test run summary: Zero tests ran)",
                       re.M),
            re.compile(r"^(?:Passed!|Failed!|Test run summary: (?:Passed|Failed))", re.M)),
+    # "?     example.com/calc  [no test files]" or "ok    example.com/calc  0.002s [no
+    # tests to run]", with no package whose tests ran ("ok    example.com/calc  0.002s",
+    # "ok    example.com/calc  (cached)", "FAIL  example.com/calc  0.002s"): go prints
+    # one line for each package
+    "go": (re.compile(r"^\?\s+\S+\s+\[no test files\]$|^ok\s+\S+\s.*\[no tests to run\]$",
+                      re.M),
+           re.compile(r"^ok\s+\S+\s+(?:\d\S*|\(cached\))$|" + _GO_PACKAGE_FAIL_PATTERN, re.M)),
     # [ FAIL 0 | WARN 0 | SKIP 1 | PASS 0 ] with no line of PASS above 0: ctloom-test-r
     # prints one line for each test file or directory it was given. "! No test files
     # found" is testthat's line for a tests directory that holds no test file
@@ -752,6 +801,11 @@ _NO_PROJECT_RE_DICT = {
     "rs": re.compile(r"^error: could not find `Cargo\.toml` in ", re.M),
     # MSBUILD : error MSB1003: Specify a project or solution file.
     "cs": re.compile(r"^MSBUILD : error MSB1003: ", re.M),
+    # pattern ./...: directory prefix . does not contain main module or its selected
+    # dependencies / ... does not contain modules listed in go.work or their selected
+    # dependencies / go: go.mod file not found in current directory or any parent
+    # directory / go: go.mod requires go >= 1.99 (running go 1.27.4; GOTOOLCHAIN=local)
+    "go": re.compile(_GO_NO_PROJECT_PATTERN, re.M),
     # ctloom-test-r: there is no tests/testthat in ... (each line the launcher prints under
     # its own name is one for a run that ran no test)
     "r": re.compile(r"^ctloom-test-r: ", re.M),
@@ -777,6 +831,10 @@ _FETCH_FAIL_RE_DICT = {
     # .../Calc.Tests.csproj : error NU1301: Failed to retrieve information about ... /
     #   Failed to restore .../Calc.Tests.csproj (in 5.84 sec).
     "cs": re.compile(r": error NU\d+: |^[ \t]*Failed to restore ", re.M),
+    # calc/calc.go:3:8: module lookup disabled by GOPROXY=off /
+    # calc/calc.go:3:8: missing go.sum entry for module providing package ... /
+    # go: github.com/google/uuid@v1.6.0: Get "https://proxy.golang.org/...": dial tcp: ...
+    "go": re.compile(_GO_FETCH_FAIL_PATTERN, re.M),
     # ctloom-test-r: these packages are not installed and could not be installed: ...
     "r": re.compile(r"^ctloom-test-r: these packages are not installed and could not be "
                     r"installed: ", re.M),
@@ -989,13 +1047,16 @@ _PYTEST_PROGRESS_RE = re.compile(
 _FAIL_HEAD_DICT = _with_alias_dict({
     "py": (_PYTEST_HEAD_RE, re.compile(_UNITTEST_FAIL_PATTERN))})
 
-# Where a run names failing tests in a second way only when the summary of the harness
-# that writes them is in the output, one entry per language: (that summary, the regex of
-# such a line, the name as its group). automake's make check: "# TOTAL: 7" and
+# Where a run names failing tests in a second way only when a regex finds what it looks
+# for in the output, one entry per language: (that regex, the regex of such a line, the
+# name as its group). automake's make check: its summary "# TOTAL: 7", and
 # "FAIL: tests/calc_test" / "ERROR: tests/io_test" (its summary's "# FAIL:  1" is not
-# one)
+# one). go test: a package that failed to set up from its own sources
+# (_GO_SETUP_FAIL_PATTERN), and "FAIL  example.com/calc [setup failed]"
 _FAIL_IF_RE_DICT = _with_alias_dict({
-    "c": (re.compile(r"^# TOTAL: +\d+$", re.M), re.compile(r"^(?:FAIL|ERROR): (\S+)"))})
+    "c": (re.compile(r"^# TOTAL: +\d+$", re.M), re.compile(r"^(?:FAIL|ERROR): (\S+)")),
+    "go": (re.compile(_GO_SETUP_FAIL_PATTERN, re.M),
+           re.compile(_GO_SETUP_FAIL_LINE_PATTERN))})
 
 # Where a run names what failed outside its tests only by the heading it prints the
 # failure under, one pair per language: (the heading, with the name as its group; the

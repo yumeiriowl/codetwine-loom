@@ -1,0 +1,9 @@
+{
+ "command": [
+  "go",
+  "test",
+  "./..."
+ ],
+ "returncode": 1,
+ "output": "FAIL\t./... [setup failed]\nFAIL\n# ./...\npattern ./...: directory prefix . does not contain main module or its selected dependencies\n"
+}

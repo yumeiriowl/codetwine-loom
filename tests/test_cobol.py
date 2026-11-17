@@ -158,14 +158,16 @@ def test_a_cobol_name_is_compared_in_upper_case_and_a_python_name_as_it_is():
     assert name_fold("copy/X.cpy") is str.upper and name_fold("a.java") is str
 
 
-def test_only_cobol_csharp_c_and_cpp_have_a_note_for_the_stages_that_write_code():
+def test_only_cobol_csharp_go_c_and_cpp_have_a_note_for_the_stages_that_write_code():
     assert "## COBOL source" in edit_paragraph("cbl", set())
     assert "## C# source" in edit_paragraph("cs", set())
+    assert "## Go source" in edit_paragraph("go", set())
     assert "## C and C++ tests" in edit_paragraph("c", set()) == edit_paragraph("cpp", set())
     assert all(edit_paragraph(ext, {"run_test"}) == ""
                for ext, lang_config in LANG_DICT.items()
                if not lang_config.column_layout
-               and lang_config not in (LANG_DICT["cs"], LANG_DICT["c"], LANG_DICT["cpp"]))
+               and lang_config not in (LANG_DICT["cs"], LANG_DICT["go"], LANG_DICT["c"],
+                                       LANG_DICT["cpp"]))
     assert DEF_EXAMPLE_DICT["cbl"] == "1000-LOAD-CONFIG"
 
 

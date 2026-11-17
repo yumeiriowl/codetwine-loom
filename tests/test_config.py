@@ -370,7 +370,7 @@ def test_falling_back_says_so_in_the_log(monkeypatch, caplog):
 
 def test_fallback_ext_has_to_be_a_language_with_a_test_command(monkeypatch):
     """LANG[PRIMARY_EXT] would otherwise raise KeyError with nothing naming the cause."""
-    monkeypatch.setenv("FALLBACK_EXT", "go")
+    monkeypatch.setenv("FALLBACK_EXT", "zig")
     with pytest.raises(ValueError, match="FALLBACK_EXT"):
         importlib.reload(config)
     monkeypatch.delenv("FALLBACK_EXT")

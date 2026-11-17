@@ -40,7 +40,7 @@ RUN if [ -n "$CA_PEM" ]; then \
 # The languages whose toolchains the image holds: every language by default. Some of
 # them alone, separated by spaces or commas, build a smaller image
 # (--build-arg TOOLCHAIN=java, --build-arg TOOLCHAIN="java ts")
-ARG TOOLCHAIN="c cbl cs java js kt r rs ts"
+ARG TOOLCHAIN="c cbl cs go java js kt r rs ts"
 
 # The Gradle distribution TOOLCHAIN=kt installs. Override to pick another version
 ARG GRADLE_VERSION=8.14.7
@@ -51,6 +51,13 @@ ARG GRADLE_VERSION=8.14.7
 ARG JDK11_VERSION=11.0.33+10
 ARG JDK11_SHA256_X64=c4b8eaf56c93b95b689ffc08d155df1bcdbbffb666f8f71d21d97aedaea6f0ec
 ARG JDK11_SHA256_AARCH64=60b0fb79bb678b6fae3e499c7b0a353e68633ed0ab69d1a6bafe6092ed1e59e4
+
+# The Go toolchain TOOLCHAIN=go installs, with the SHA-256 of its amd64 and arm64
+# archives. Override to pick another version. It goes under /usr/local/go, go and gofmt
+# are linked into /usr/local/bin, and go keeps the modules it fetches under $HOME/go
+ARG GO_VERSION=1.27.4
+ARG GO_SHA256_AMD64=7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840
+ARG GO_SHA256_ARM64=3392582988a273a87ab5043ee1b2c9c17a2c3c00580bf9326c47a2e0aaaeac92
 
 # The Rust toolchain TOOLCHAIN=rs installs. Override to pick another version. Its
 # binaries are linked into /usr/local/bin, and cargo keeps the crates it fetches under
@@ -146,6 +153,17 @@ RUN if [ -n "$CA_PEM" ]; then \
            done \
         && ln -sf /usr/share/dotnet/dotnet /usr/local/bin/dotnet \
         && rm /tmp/dotnet-install.sh ;; \
+      go) apt-get install -y --no-install-recommends curl ca-certificates gcc libc6-dev \
+        && case "$(dpkg --print-architecture)" in \
+             amd64) go_sum="$GO_SHA256_AMD64" ;; \
+             arm64) go_sum="$GO_SHA256_ARM64" ;; \
+             *) echo "no Go archive for $(dpkg --print-architecture)" >&2; exit 1 ;; \
+           esac \
+        && curl -fsSL -o /tmp/go.tgz \
+             "https://go.dev/dl/go${GO_VERSION}.linux-$(dpkg --print-architecture).tar.gz" \
+        && printf '%s  /tmp/go.tgz\n' "$go_sum" | sha256sum -c - \
+        && tar -xzf /tmp/go.tgz -C /usr/local && rm /tmp/go.tgz \
+        && ln -sf /usr/local/go/bin/go /usr/local/go/bin/gofmt /usr/local/bin/ ;; \
       py|sql) : ;; \
       *) echo "unknown TOOLCHAIN: $toolchain" >&2; exit 1 ;; \
     esac || exit 1; done \
@@ -172,6 +190,10 @@ ENV LITELLM_LOCAL_ANTHROPIC_BETA_HEADERS=True
 # dotnet sends no telemetry and prints no first-run banner, and an app or test host built
 # for an older .NET runs on the newest runtime the image has
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 DOTNET_ROLL_FORWARD=Major
+
+# go uses the toolchain of the image whatever version go.mod names, sends no telemetry,
+# and keeps the modules it fetches writable
+ENV GOTOOLCHAIN=local GOTELEMETRY=off GOFLAGS=-modcacherw
 
 # What the sandbox subcommand runs instead of the entry point below. It clones the
 # read-only mount, runs the tool over the clone and writes a patch back out
@@ -206,6 +228,7 @@ RUN for toolchain in $(echo "$TOOLCHAIN" | tr ',' ' '); do case "$toolchain" in 
       cbl|cob|cpy|bms|jcl|prc|proc|csd) \
         install -m 0755 sandbox/check-cbl.py /usr/local/bin/ctloom-check-cbl ;; \
       cs) install -m 0755 sandbox/check-cs.sh /usr/local/bin/ctloom-check-cs ;; \
+      go) install -m 0755 sandbox/check-go.sh /usr/local/bin/ctloom-check-go ;; \
       r|rmd|qmd) install -m 0755 sandbox/check-r.R /usr/local/bin/ctloom-check-r \
         && install -m 0755 sandbox/test-r.R /usr/local/bin/ctloom-test-r ;; \
       *) : ;; \

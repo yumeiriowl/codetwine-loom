@@ -1,0 +1,9 @@
+{
+ "command": [
+  "go",
+  "test",
+  "./..."
+ ],
+ "returncode": 1,
+ "output": "FAIL\texample.com/calc [setup failed]\nFAIL\texample.com/calc/calc [setup failed]\nok  \texample.com/calc/util\t(cached)\n?   \texample.com/calc/util/internal/half\t[no test files]\nFAIL\n# example.com/calc\npackage example.com/calc/calc\n\tcalc/calc.go:3:8: use of internal package example.com/calc/util/internal/half not allowed\n# example.com/calc/calc\npackage example.com/calc/calc\n\tcalc/calc.go:3:8: use of internal package example.com/calc/util/internal/half not allowed\n"
+}

@@ -1,0 +1,9 @@
+{
+ "command": [
+  "go",
+  "test",
+  "./..."
+ ],
+ "returncode": 1,
+ "output": "FAIL\texample.com/calc [setup failed]\nFAIL\texample.com/calc/calc [setup failed]\nok  \texample.com/calc/util\t(cached)\nFAIL\n# example.com/calc\ncalc/mul.go:1:1: expected 'package', found 'func'\n# example.com/calc/calc\ncalc/mul.go:1:1: expected 'package', found 'func'\n"
+}

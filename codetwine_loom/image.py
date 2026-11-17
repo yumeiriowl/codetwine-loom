@@ -31,6 +31,7 @@ _GROUP_EXT_DICT: dict[str, tuple[str, ...]] = {
     "c": ("c", "cpp", "h", "cc", "cxx", "hpp", "hh", "hxx"),
     "rs": ("rs",),
     "cs": ("cs",),
+    "go": ("go",),
     "cbl": ("cbl", "cob", "cpy", "bms", "jcl", "prc", "proc", "csd"),
     "r": ("r", "rmd", "qmd"),
 }

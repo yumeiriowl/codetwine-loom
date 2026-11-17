@@ -6,7 +6,7 @@ A command-line tool that changes code from a request written in plain language, 
 - **Its own agent loop (RLM)**: the model writes Python, which runs in a REPL. No external agent framework is used
 - **Changes in a container**: `sandbox` changes a clone in a container with no network and no API key, and applies the result to your working tree without committing
 - **Request dispatch**: `run` splits a question into sub-questions or a change into tasks, runs agents in parallel and merges the results. After the merge, it writes tests and refactors the change
-- **Many languages**: every text file is searchable. Definitions and call relations cover the 15 languages codetwine analyses (Python, Java, Kotlin, JavaScript, TypeScript, C, C++, Rust, C#, SQL, COBOL, BMS, JCL, CICS CSD and R)
+- **Many languages**: every text file is searchable. Definitions and call relations cover the 16 languages codetwine analyses (Python, Java, Kotlin, JavaScript, TypeScript, C, C++, Rust, C#, Go, SQL, COBOL, BMS, JCL, CICS CSD and R)
 
 ## Table of Contents
 

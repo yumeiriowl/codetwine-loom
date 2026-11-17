@@ -91,7 +91,7 @@ Other settings (tests, cost limits, containers, web search, logging) are in [ref
 `run`, `sandbox`, `integrate` and `warm` run containers from the image `codetwine-loom`, which holds the toolchains of every language. Without a terminal, a missing image stops the command with a message like:
 
 ```text
-Build it (TOOLCHAIN=c cbl cs java js kt r rs ts) with:
+Build it (TOOLCHAIN=c cbl cs go java js kt r rs ts) with:
   podman build ... --label io.codetwine-loom.source=<hash> ... -t codetwine-loom <clone>
 ```
 

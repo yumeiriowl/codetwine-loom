@@ -67,7 +67,7 @@ The defaults come from the repository's primary language (the one `build` prints
 | `TEST_TARGET_STYLE` | How test paths are passed: `path` (appended), `separator` (after `--`), `none` (dropped). Set it with `TEST_COMMAND` when you switch build tools | The language's default |
 | `TEST_TIMEOUT_SEC` | The time limit of one test run | `300` |
 | `CHECK_COMMAND` | The static check. Each output line `<path>:<line>[:<col>]: <text>` is a finding; new findings leave the change unsettled | The language's default (`ruff check --select F821` for Python; none for Java, Kotlin, SQL) |
-| `RUN_COMMAND` | The start of the command `run_project` runs; the model passes the rest | `uv run` (Python), `cargo run --quiet --` (Rust), `Rscript` (R); none for most others |
+| `RUN_COMMAND` | The start of the command `run_project` runs; the model passes the rest | `uv run` (Python), `cargo run --quiet --` (Rust), `go run` (Go; the first argument is the package), `Rscript` (R); none for most others |
 | `SMOKE_ARG` | Arguments after `RUN_COMMAND` for a start of the program after every turn that changed files. `{workspace}` is a temporary directory. Empty means no check | empty |
 | `FORMAT_COMMAND` | A formatter run in the container on the changed files at the end of each run (`ruff format`). Must exist in the image | empty |
 | `COBOL_DIALECT` | `cobc -std=` dialect for the COBOL check (`ibm`, `mf`, …) | empty |
@@ -83,6 +83,7 @@ Default test commands by primary language:
 | C / C++ | `ctloom-test-c` (needs CMake or a makefile `test` target) | `tests`, `test` |
 | Rust | `cargo test --workspace --no-fail-fast` | `tests` |
 | C# | `dotnet test <solution-at-the-root>` | `tests`, `test` |
+| Go | `go test ./...` | beside the sources (`*_test.go`) |
 | R | `ctloom-test-r` (testthat) | `tests/testthat` |
 | SQL, COBOL, BMS, JCL, CSD | none; set `TEST_COMMAND` | `tests` |
 

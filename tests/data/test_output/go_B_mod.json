@@ -1,0 +1,9 @@
+{
+ "command": [
+  "go",
+  "test",
+  "./..."
+ ],
+ "returncode": 1,
+ "output": "go: errors parsing go.mod:\ngo.mod:5: usage: require module/path v1.2.3\n"
+}

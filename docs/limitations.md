@@ -163,11 +163,12 @@ These rules read the default runners' normal output. A `TEST_COMMAND` whose tool
 | JavaScript | Undefined names only (ESLint `no-undef`). Misspellings that match a global of the browser, Node.js, Bun, jest or mocha (`name`, `status`, `run` and so on) are missed |
 | TypeScript | Type and argument errors too (`tsc`), with the type definitions of Node.js and jest, and of Bun in a repository run by Bun (a `bun.lock`, `bun.lockb` or `bunfig.toml`, a `packageManager` of bun, or a `package.json` script that runs `bun` or `bunx`) |
 | C / C++, Rust, C# | All compile errors (warnings are not counted) |
+| Go | The first compile error of each package (test files included), and the findings of `go vet` in the packages that build |
 | COBOL | All errors of GnuCOBOL's syntax check, except inside `EXEC` and the names CICS, IMS, DB2 and MQ provide |
 | R | Syntax errors and calls of undefined functions only |
 | Java, Kotlin, SQL, BMS, JCL, CSD | No default check |
 
-The defaults other than Python's are in the container image (the default image has all of them); on the host, or in an image without the language's toolchain, a warning is printed and nothing is checked. When the check tool fails, when C / C++ cannot be configured (libraries missing from the image, say), or when Rust's crates or C#'s packages are not in the package cache, a warning is printed and the check is skipped. C / C++ checks nothing, without a warning, when the repository has no `CMakeLists.txt`, top-level makefile or `configure`. Findings are compared by path and text, so an existing error whose text changes (a TypeScript error that names a type, for example) counts as new.
+The defaults other than Python's are in the container image (the default image has all of them); on the host, or in an image without the language's toolchain, a warning is printed and nothing is checked. When the check tool fails, when C / C++ cannot be configured (libraries missing from the image, say), or when Rust's crates, C#'s packages or Go's modules are not in the package cache, a warning is printed and the check is skipped. C / C++ checks nothing, without a warning, when the repository has no `CMakeLists.txt`, top-level makefile or `configure`. Findings are compared by path and text, so an existing error whose text changes (a TypeScript error that names a type, for example) counts as new.
 
 ### What the rewriting tools refuse
 
@@ -232,6 +233,10 @@ Only integration tests under `tests` count as test files (for the record of chan
 ### C#
 
 The default test command (`dotnet test`) and static check (`ctloom-check-cs`) use the one solution (`.sln`, `.slnx`) at the top, or else the one project (`.csproj`) there. With none, or more than one, the tests are `"did not run"` and the check is skipped; set `TEST_COMMAND` (`dotnet test src/App.sln`) and `CHECK_COMMAND` (`ctloom-check-cs src/App.sln`). When `global.json` asks for an SDK version the image lacks, neither runs ([Building the image](container.md#building-the-image)). A project builds only the `.cs` files under its directory, so new files must go under a project; tests written elsewhere do not run. Writing tests in a repository without a test project needs a new `.csproj` and a test framework's packages, which fails in a container without a network when they are not in the package cache. `run_project` works only when `RUN_COMMAND` is set (`dotnet run --project src/App`, say).
+
+### Go
+
+The default test command (`go test ./...`), static check (`ctloom-check-go`) and launcher (`go run`) run at the top of the repository, so they need a `go.mod` there; for a module in a subdirectory or a `go.work` of several modules, set `TEST_COMMAND` and `CHECK_COMMAND`. Files named `*_test.go` count as test files wherever they are, and the test-writing stage puts new ones beside the code they test. `go test` takes packages, not files, so `run_test` runs every package whatever paths it is given. The image's Go is used whatever version `go.mod` names; when `go.mod` asks for a newer one, the tests are `"did not run"`. A change that adds a module dependency needs its `go.mod` and `go.sum` lines, which need `go get` with a network: add them yourself before the run.
 
 ### C / C++ tests need CMake or a makefile with a test target
 

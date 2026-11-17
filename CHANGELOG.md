@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 - 2026-11-17
+
+### Added
+- Go: definitions and call relations, `go test ./...` as the default test command with its output read for failing tests, packages that do not build, runs over no tests and modules that cannot be fetched, `go run` as the default launcher, and the static check `ctloom-check-go` (`go vet`)
+- The image holds Go (`TOOLCHAIN=go`, `GO_VERSION`)
+
 ## 0.1.0 - 2026-11-08
 
 First public release.

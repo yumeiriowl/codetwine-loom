@@ -6798,9 +6798,10 @@ def test_only_the_names_of_a_language_that_writes_them_so_lose_their_front(ext):
     is_cpp = LANG_DICT[ext].name_prefix_pattern == LANG_DICT["cpp"].name_prefix_pattern
     assert own_name(path, "Calc::mul") == ("mul" if is_cpp else "Calc::mul")
     assert own_name(path, "~Calc") == ("Calc" if is_cpp or ext == "cs" else "~Calc")
-    assert bool(LANG_DICT[ext].name_prefix_pattern) is (is_cpp or ext == "cs")
-    for name in ("print.shape", "mul", "operator bool", "operator~", "WS-TOTAL", "%+%",
-                 "::", "~"):
+    assert own_name(path, "Store.Add") == ("Add" if ext == "go" else "Store.Add")
+    assert bool(LANG_DICT[ext].name_prefix_pattern) is (is_cpp or ext in ("cs", "go"))
+    assert own_name(path, "print.shape") == ("shape" if ext == "go" else "print.shape")
+    for name in ("mul", "operator bool", "operator~", "WS-TOTAL", "%+%", "::", "~"):
         assert own_name(path, name) == name
     assert own_name("no_language.txt", "Calc::~Calc") == "Calc::~Calc"
 
@@ -6966,6 +6967,12 @@ def test_a_variable_holding_a_function_is_a_definition_a_side_is_held_to(tmp_pat
     ("java", "enum_constant", "    RED,", False),
     ("java", "constant_declaration", "    int MAX = 3;", False),
     ("java", "method_declaration", "    int count() { return 0; }", False),
+    ("go", "var_spec", "var limit = 10", True),
+    ("go", "const_spec", "const Name = \"a(b)\"", True),
+    ("go", "var_spec", "var table = map[string]int{\"a\": 1}", True),
+    ("go", "var_spec", "var handler = func(w io.Writer) {}", False),
+    ("go", "var_spec", "var hook func(int) error", False),
+    ("go", "var_spec", "var Map = func[T any](list []T) []T { return list }", False),
     ("cs", "property_declaration", "    public int Total { get; set; }", True),
     ("cs", "property_declaration", "    public int Total { get; init; } = 0;", True),
     ("cs", "field_declaration", "    private readonly List<int> items = new();", True),
