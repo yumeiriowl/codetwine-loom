@@ -2,14 +2,19 @@
 
 A command-line tool that changes code from a request written in plain language, or answers questions about the code. It builds a search index from the [codetwine](https://github.com/yumeiriowl/codetwine) analysis of a repository, finds the files and definitions the request is about, and has an LLM agent rewrite them and run the tests.
 
-- **Search without an LLM in the index**: the index uses BM25 and the call relations codetwine extracts. The request is first turned into English search terms; it can be written in any language
-- **Its own agent loop (RLM)**: the model writes Python, which runs in a REPL. No external agent framework is used
-- **Changes in a container**: `sandbox` changes a clone in a container with no network and no API key, and applies the result to your working tree without committing
-- **Request dispatch**: `run` splits a question into sub-questions or a change into tasks, runs agents in parallel and merges the results. After the merge, it writes tests and refactors the change
-- **Many languages**: every text file is searchable. Definitions and call relations cover the 16 languages codetwine analyses (Python, Java, Kotlin, JavaScript, TypeScript, C, C++, Rust, C#, Go, SQL, COBOL, BMS, JCL, CICS CSD and R)
+Before the agents that answer or change code start, codetwine-loom picks the files and definitions related to the request from an analysis of the whole repository. It is intended for large repositories and for code without documentation.
+
+- **Analysis ahead of time**: [codetwine](https://github.com/yumeiriowl/codetwine) parses the source with tree-sitter and records the definitions and the calls between them, so the agents do not work out the dependencies on each run. Optionally, codetwine also writes a design document for each source file, which adds plain-language words to search on. Running `build --doc-create` again writes them only for files without one, changed files, and files that depend on them
+- **Search without an LLM in the index**: an LLM is used only to turn the request, written in any language, into English search terms. Ranking the definitions with BM25 and following their call relations one hop run without an LLM, so the same search terms give the same candidates
+- **Changes in a container**: `sandbox`, `run` and `integrate` run the agents inside a container with no network and no API key. A broker on the host makes the model calls, and a change comes back from the container as one patch, which is applied to your working tree without committing when the run succeeds
+- **Request dispatch**: `run` splits a question into sub-questions, or a change into tasks, runs them in parallel, each in its own container, and merges the results. After the merge, it writes tests and refactors the change
+- **Its own agent loop (RLM)**: the model writes Python, which runs in a REPL. Planning, changing, merging, writing tests and refactoring are separate stages in a fixed order. No external agent framework is used
+
+> **Note:** codetwine-loom works on an existing repository. In a repository with no files in the [supported languages](#-supported-languages), the analysis finds no definitions or call relations for the search to use. Agent skills and MCP servers cannot be configured for its agents; [instruction files](docs/settings.md#the-instruction-files-for-changes-codetwine_loommd) can.
 
 ## Table of Contents
 
+- [🌐 Supported languages](#-supported-languages)
 - [🚀 Quick Start](#-quick-start)
   - [Prerequisites](#prerequisites)
   - [1. Installation](#1-installation)
@@ -28,6 +33,30 @@ A command-line tool that changes code from a request written in plain language, 
 - [🏗️ Project structure](#️-project-structure)
 - [🙏 Acknowledgments](#-acknowledgments)
 - [📄 License](#-license)
+
+## 🌐 Supported languages
+
+For the languages below, codetwine extracts the definitions and call relations that the search ranks and follows. Other text files (`README.md`, `config/app.yaml` and so on) have no definitions: the search finds them when the request names them, and the agents can read, search and change them. The table also lists the default test command and static check of each language; `TEST_COMMAND` and `CHECK_COMMAND` replace them.
+
+| Language | Extensions | Default tests | Default static check |
+|------|------|------|------|
+| Python | `.py` | pytest | Undefined names (ruff) |
+| Java | `.java` | Maven (`mvn test`) | None |
+| Kotlin | `.kt`, `.kts` | Gradle (`gradle test`) | None |
+| JavaScript | `.js`, `.jsx`, `.mjs`, `.cjs` | `npm test` (`node --test` without `package.json`) | Undefined names (ESLint) |
+| TypeScript | `.ts`, `.tsx`, `.mts`, `.cts` | `npm test` | Type and argument errors (`tsc`) |
+| C / C++ | `.c`, `.h`, `.cpp`, `.cc`, `.cxx`, `.hpp`, `.hh`, `.hxx` | CMake's `ctest`, or the makefile's `test` target | Compile errors |
+| Rust | `.rs` | `cargo test` | Compile errors |
+| C# | `.cs` | `dotnet test` | Compile errors |
+| Go | `.go` | `go test ./...` | Compile errors and `go vet` |
+| R | `.R`, `.Rmd`, `.qmd` | testthat (`tests/testthat`) | Syntax errors and undefined functions |
+| SQL | `.sql` | None | None |
+| COBOL | `.cbl`, `.cob`, `.cpy` | None | GnuCOBOL's syntax check |
+| BMS (mainframe screen definitions) | `.bms` | None | None |
+| JCL (mainframe job definitions) | `.jcl`, `.prc`, `.proc` | None | None |
+| CICS CSD (CICS resource definitions) | `.csd` | None | None |
+
+Where the default is None, set `TEST_COMMAND` or `CHECK_COMMAND` to have tests or a check. The exact commands are in [Defaults by language](docs/settings.md#defaults-by-language), and what each language needs for its tests to run is in [Limitations by language](docs/limitations.md#by-language).
 
 ## 🚀 Quick Start
 
