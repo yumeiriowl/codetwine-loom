@@ -364,7 +364,7 @@ The change stage can call `explore("<aspect>")`. This starts a separate agent wi
 | `GREP_CONTEXT_HIT` | How many hits get context lines; later hits show only `path`, `line` and `text` | `5` |
 | `GREP_HIT_OVERHEAD_CHAR` | The estimated characters per hit besides its text, used to work out how many hits fit | `60` |
 | `GREP_LINE_MAX_CHAR` | The characters kept per line; a cut line ends with `... (N chars omitted)`. `0` does not cut | `200` |
-| `GREP_SKIP_DIR` | Directory names `grep_source` skips, separated by commas. The primary language's build output directories ([Defaults by language](#defaults-by-language)) are skipped too | `__pycache__,.git,.github,.venv,venv,.tox,.mypy_cache,.pytest_cache,node_modules,dist,build,out,target,.gradle,.mvn,vendor,.idea,.vscode` |
+| `GREP_SKIP_DIR` | Directory names `grep_source` skips, separated by commas. The primary language's build output directories ([Defaults by language](#defaults-by-language)) are skipped too. Default: `__pycache__`, `.git`, `.github`, `.venv`, `venv`, `.tox`, `.mypy_cache`, `.pytest_cache`, `node_modules`, `dist`, `build`, `out`, `target`, `.gradle`, `.mvn`, `vendor`, `.idea`, `.vscode` | The list in the description |
 
 ## Asking about facts outside the repository (`web_search`)
 
