@@ -1608,7 +1608,10 @@ def test_a_no_proxy_every_client_of_the_model_calls_reads_alike_is_taken(
     ("10.0.0.0/8", "http://10.1.2.3:8080/v1",
      "an entry that names a network (address/prefix)"),
     ("localhost,192.168.0.0/16", "http://192.168.1.5:8080/v1",
-     "an entry that names a network (address/prefix)")])
+     "an entry that names a network (address/prefix)"),
+    ("*.corp.example", "https://llm.corp.example/v1", "an entry with a leading '*.'"),
+    ("localhost,*.corp.example", "http://llm.corp.example:8080/v1",
+     "an entry with a leading '*.'")])
 def test_a_no_proxy_the_clients_of_the_model_calls_read_apart_is_said_by_its_entry(
         monkeypatch, no_proxy, api_base, kind):
     """With the kind of entry and the endpoint's name, nothing of the value; the real

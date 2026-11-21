@@ -8437,6 +8437,11 @@ def test_the_parts_a_run_ran_tests_of_are_read_where_its_output_names_them():
     assert edit._ran_name_list(_CARGO_OUTPUT, "rs", [], "web") == [
         "src/lib.rs::src/lib.rs - add (line 5) [calc]", "src/lib.rs::tests::adds [calc]",
         "src/lib.rs::tests::subs [calc]"]
+    # cargo's build directory names the binary under deps/ or under build/<name>/<hash>/out/
+    assert edit._ran_name_list(_CARGO_OUTPUT.replace(
+        "target/debug/deps/calc-f3ab8b639f461af0",
+        "target/debug/build/calc/cbc7eb0ec97a09bc/out/calc-cbc7eb0ec97a09bc"), "rs", [],
+        "web") == edit._ran_name_list(_CARGO_OUTPUT, "rs", [], "web")
     # A block without its target line, or names fewer than the results count, say none
     assert edit._ran_name_list(_CARGO_OUTPUT.replace("   Doc-tests calc\n", ""), "rs", [],
                                "") is None
@@ -8474,6 +8479,8 @@ def test_the_parts_a_run_ran_tests_of_are_read_where_its_output_names_them():
     # The lines they are read off are kept between the first and the last bytes returned
     for line, ext in (("test tests::adds ... ok", "rs"), ("running 2 tests", "rs"),
                       ("     Running unittests src/lib.rs (target/debug/deps/calc-f3ab)", "rs"),
+                      (("     Running tests/basic.rs (target/debug/build/calc/4e92/out/"
+                        "basic-4e92)"), "rs"),
                       ("   Doc-tests calc", "rs"), (_MAVEN_OUTPUT.split("\n")[2], "java"),
                       ("PASS test/a.test.js", "js")):
         assert edit._read_line_count(line, ext) == 1, line

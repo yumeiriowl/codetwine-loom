@@ -990,10 +990,11 @@ _DOTNET_RAN_RE = re.compile(r"^(?:Passed|Failed)!\s+- Failed:\s+(\d+), Passed:\s
 
 # cargo's line for each target it runs the tests of, on standard error, in the order of
 # the "running N tests" lines on standard output: "Running unittests src/lib.rs
-# (target/debug/deps/calc-f3ab8b63)", "Running tests/basic.rs (target/debug/deps/
-# basic-3791478)" and "Doc-tests calc"; its "running 2 tests"; and its line for a test
-# that passed or failed, "test tests::adds ... ok" (not "... ignored")
-_CARGO_TARGET_RE = re.compile(r"^\s*(?:Running (?:unittests )?(\S+) \(\S*?deps/([\w-]+?)-[0-9a-f]+"
+# (target/debug/deps/calc-f3ab8b63)" or "(target/debug/build/calc/f3ab8b63/out/
+# calc-f3ab8b63)", "Running tests/basic.rs (target/debug/deps/basic-3791478)" and
+# "Doc-tests calc"; its "running 2 tests"; and its line for a test that passed or
+# failed, "test tests::adds ... ok" (not "... ignored")
+_CARGO_TARGET_RE = re.compile(r"^\s*(?:Running (?:unittests )?(\S+) \(\S*?/([\w-]+?)-[0-9a-f]+"
                               r"(?:\.exe)?\)|Doc-tests (\S+))$", re.M)
 _CARGO_BLOCK_RE = re.compile(r"^running \d+ tests?$", re.M)
 _CARGO_TEST_RE = re.compile(r"^test (.+?) \.\.\. (?:ok|FAILED)$", re.M)

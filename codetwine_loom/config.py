@@ -200,6 +200,7 @@ _NO_PROXY_ENTRY_TEXT_DICT = {
     "port": ("an entry with a port (host:port)", "write the host alone"),
     "dot": ("an entry with a leading '.' that names the host itself",
             "write the host without the '.'"),
+    "wildcard": ("an entry with a leading '*.'", "write '.' in place of the '*.'"),
     "star": ("'*' among other entries", "write '*' alone, or leave it out"),
     "other": ("an entry the clients match differently",
               "write the host as the URL writes it"),
@@ -3737,7 +3738,7 @@ def _no_proxy_entry_kind(entry: str) -> str:
         entry: The entry, without the blanks around it.
 
     Returns:
-        "scheme", "network", "port", "dot" or "other".
+        "scheme", "network", "port", "wildcard", "dot" or "other".
     """
     if "://" in entry:
         return "scheme"
@@ -3753,6 +3754,8 @@ def _no_proxy_entry_kind(entry: str) -> str:
             has_port = ":" in entry
     if has_port:
         return "port"
+    if entry.startswith("*."):
+        return "wildcard"
     return "dot" if entry.startswith(".") else "other"
 
 
