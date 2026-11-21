@@ -43,7 +43,7 @@ RUN if [ -n "$CA_PEM" ]; then \
 ARG TOOLCHAIN="c cbl cs go java js kt r rs ts"
 
 # The Gradle distribution TOOLCHAIN=kt installs. Override to pick another version
-ARG GRADLE_VERSION=8.14.7
+ARG GRADLE_VERSION=8.14.8
 
 # The Temurin JDK 11 TOOLCHAIN=java installs beside the default JDK, under
 # /opt/ctloom-jdk11, with the SHA-256 of its x64 and aarch64 archives. Maven builds a
@@ -72,9 +72,9 @@ ARG COREPACK_VERSION=0.36.0
 # and aarch64 archives. bun and bunx go in /usr/local/bin, and Bun's type definitions of
 # the same version (@types/bun) go beside the static check's, which reads them in a
 # repository run by Bun
-ARG BUN_VERSION=1.4.4
-ARG BUN_SHA256_X64=e0446eb55995772eb9894bebae9a6be368d985a8b9271ee124486f9946eedd76
-ARG BUN_SHA256_AARCH64=baa6bb36f51d6e58561e02bbea825038a9df454f673d6d776e8bbf86f8c7850e
+ARG BUN_VERSION=1.4.5
+ARG BUN_SHA256_X64=dcb23a18a1c2fff12d57bcef696dbbb42eb67fde29f43816ecb595459a24c463
+ARG BUN_SHA256_AARCH64=18656a3bf0ea5641f5796ae4213b75255579a70a0fded2f337933785568cdf84
 
 # The .NET SDK channels TOOLCHAIN=cs installs, separated by spaces (e.g. "11.0 10.0 8.0").
 # Override to pick others. The SDKs go under /usr/share/dotnet, dotnet is linked into
