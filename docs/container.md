@@ -137,7 +137,6 @@ sandbox: Keep loading the settings file from crashing
 Keep loading the settings file from crashing
 
 Codetwine-Loom-Run-Request: Keep loading the settings file from crashing
-Codetwine-Loom-Attempt: 2
 Codetwine-Loom-Verdict: unverified
 Codetwine-Loom-Why: nothing here checks that the request itself is done, so the work may still be part-way
 Codetwine-Loom-Exit-Status: 0
@@ -149,14 +148,14 @@ Codetwine-Loom-Exit-Status: 0
 | `Codetwine-Loom-Verdict` | For a change, `failed`, `unverified`, `no_change` or `tests_red`; for a merge and the stages after it, `settled` or `unsettled` |
 | `Codetwine-Loom-Why` | The reason for the verdict |
 | `Codetwine-Loom-Did` | What the run said it did, when it said anything |
-| `Codetwine-Loom-Attempt` / `Codetwine-Loom-Exit-Status` | Which attempt the change is, and the exit status inside the container |
+| `Codetwine-Loom-Exit-Status` | The exit status inside the container |
 | `Codetwine-Loom-Tests-Changed` / `Codetwine-Loom-Untooled` | The test files the change edited, and the files written without the tools ([The REPL is not a sandbox](limitations.md#the-repl-is-not-a-sandbox)) |
 | `Codetwine-Loom-Stage` | Only on the commits of the stages after the merge: `test-create`, `refactor` or `test-refactor` |
 
 Other `Codetwine-Loom-*` lines hold state that `run --resume` and `integrate --resume` read back, such as what a merge decided. Only what the tool decided goes in; to add your own notes, use `git notes`. `merge`, `rebase` and `cherry-pick -x` keep the trailers; `git merge --squash` loses them. git can print them:
 
 ```bash
-git log --format='%h attempt=%(trailers:key=Codetwine-Loom-Attempt,valueonly,separator=%x20) verdict=%(trailers:key=Codetwine-Loom-Verdict,valueonly,separator=%x20)' <branch>
+git log --format='%h verdict=%(trailers:key=Codetwine-Loom-Verdict,valueonly,separator=%x20) exit=%(trailers:key=Codetwine-Loom-Exit-Status,valueonly,separator=%x20)' <branch>
 ```
 
 ## What a run that did not pass leaves

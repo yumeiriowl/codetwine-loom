@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.1 - 2026-11-22
+
+### Changed
+- The image holds Bun 1.4.5 and Gradle 8.14.8, and the locked dependencies are updated (litellm 1.110.1, openai 3.55.1 and others)
+- A `NO_PROXY` entry starting with `*.` is reported with the advice to write `.` in its place
+
+### Removed
+- The `Codetwine-Loom-Attempt` trailer on change commits
+
+### Fixed
+- The test targets `cargo test` ran are read from the build directory layout of Cargo 1.100 as well
+
 ## 0.2.0 - 2026-11-17
 
 ### Added

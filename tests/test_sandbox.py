@@ -6010,7 +6010,6 @@ def test_the_commit_carries_what_the_run_recorded_about_itself(tmp_path, monkeyp
     _, _, message = _committed(
         tmp_path, monkeypatch, "make it stop crashing",
         [_attempt(1, verdict="failed", why="no edit landed at all")])
-    assert "Codetwine-Loom-Attempt: 1" in message
     assert "Codetwine-Loom-Verdict: failed" in message
     assert "Codetwine-Loom-Why: no edit landed at all" in message
     assert "Codetwine-Loom-Exit-Status: 0" in message
@@ -6049,7 +6048,8 @@ def test_git_reads_the_trailers_back_as_trailers(tmp_path, monkeypatch):
     repo, commit, _ = _committed(tmp_path, monkeypatch, "make it stop crashing",
                                  [_attempt(3, verdict="unverified")])
     assert _trailer(repo, commit, "Codetwine-Loom-Verdict") == "unverified"
-    assert _trailer(repo, commit, "Codetwine-Loom-Attempt") == "3"
+    assert (_trailer(repo, commit, "Codetwine-Loom-Why")
+            == "nothing here checks that it is done")
 
 
 def test_a_request_of_several_lines_still_leaves_one_subject_line(tmp_path,
@@ -6077,7 +6077,7 @@ def test_an_entry_an_earlier_run_wrote_is_not_what_this_commit_says(tmp_path,
     """A run that records nothing must not be described by the run before it."""
     _, _, message = _committed(tmp_path, monkeypatch, "x", attempt_list=None,
                                before=[_attempt(4, verdict="failed")])
-    assert "Codetwine-Loom-Verdict" not in message and "Codetwine-Loom-Attempt" not in message
+    assert "Codetwine-Loom-Verdict" not in message and "Codetwine-Loom-Why" not in message
     assert "Codetwine-Loom-Exit-Status: 0" in message
 
 
@@ -17397,11 +17397,11 @@ _EVERY_RECORD_DICT = {
     "skipped": "", "parents": ["p"], "request": "r", "at": "2026-10-13T00:00:00"}
 
 # The keys of _EVERY_RECORD_DICT that reach no trailer
-_NO_TRAILER_KEY_LIST = ["skipped", "parents", "request", "at"]
+_NO_TRAILER_KEY_LIST = ["n", "skipped", "parents", "request", "at"]
 
 
 @pytest.mark.parametrize("kind, verdict, key_list", [
-    ("edit", "failed", ["n", "verdict", "why", "did", "untooled", "tests_changed"]),
+    ("edit", "failed", ["verdict", "why", "did", "untooled", "tests_changed"]),
     ("merge", "settled", ["verdict", "why", "did", "tests_changed", "ended", "decisions",
                           "separator", "no_merge"]),
     ("test-merge", "unsettled", ["verdict", "why", "did", "tests_changed", "ended",
@@ -17482,8 +17482,8 @@ def test_a_change_run_s_commit_records_no_verdict_and_no_case_of_a_merge_s(
     _, _, message = _committed(tmp_path / "one", monkeypatch, "do it", [entry_dict])
     line_list = integrate_mod.record_line_list(message)
     assert [line.partition(":")[0] for line in line_list] == [
-        "Codetwine-Loom-Run-Request", "Codetwine-Loom-Attempt", "Codetwine-Loom-Verdict",
-        "Codetwine-Loom-Why", "Codetwine-Loom-Did", "Codetwine-Loom-Exit-Status"]
+        "Codetwine-Loom-Run-Request", "Codetwine-Loom-Verdict", "Codetwine-Loom-Why",
+        "Codetwine-Loom-Did", "Codetwine-Loom-Exit-Status"]
     assert "Codetwine-Loom-Verdict: unverified" in line_list
     _, _, message = _committed(tmp_path / "two", monkeypatch, "do it",
                                [_attempt(1, verdict="settled", why="left")])

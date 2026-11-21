@@ -1434,13 +1434,13 @@ def test_the_request_is_read_out_of_the_commit_a_run_left(repo):
     directory, base = repo
     _committed(directory, base, "asked",
                "sandbox: stop the parser crashing\n\nstop the parser crashing on an "
-               "empty file\n\nCodetwine-Loom-Attempt: 1\nCodetwine-Loom-Exit-Status: 0")
+               "empty file\n\nCodetwine-Loom-Exit-Status: 0")
     assert [t["asked"] for t in integrate.commit_record_list(directory, base, "asked")] == \
         ["stop the parser crashing on an empty file"]
 
 
 def test_the_machines_own_trailers_are_not_read_as_a_request():
-    assert integrate._request_in_message("sandbox: x\n\nCodetwine-Loom-Verdict: ok\nCodetwine-Loom-Attempt: 2") == ""
+    assert integrate._request_in_message("sandbox: x\n\nCodetwine-Loom-Verdict: ok\nCodetwine-Loom-Exit-Status: 0") == ""
 
 
 def test_a_request_line_that_reads_like_a_trailer_is_still_the_request():
@@ -1457,10 +1457,10 @@ _CUT_LINE = "# ------------------------ >8 ------------------------"
 
 @pytest.mark.parametrize("message, line_list, asked", [
     # As this tool writes it: subject, request, record
-    ("sandbox: do it\n\ndo it\n\nCodetwine-Loom-Run-Request: do it\nCodetwine-Loom-Attempt: 1\n"
+    ("sandbox: do it\n\ndo it\n\nCodetwine-Loom-Run-Request: do it\n"
      "Codetwine-Loom-Verdict: failed\nCodetwine-Loom-Exit-Status: 1\n",
-     ["Codetwine-Loom-Run-Request: do it", "Codetwine-Loom-Attempt: 1",
-      "Codetwine-Loom-Verdict: failed", "Codetwine-Loom-Exit-Status: 1"], "do it"),
+     ["Codetwine-Loom-Run-Request: do it", "Codetwine-Loom-Verdict: failed",
+      "Codetwine-Loom-Exit-Status: 1"], "do it"),
     # The request holds lines git's own reading of a message stops or starts at
     (f"sandbox: do it\n\ndo it\n\nCodetwine-Loom-Verdict: settled\n{_CUT_LINE}\nmore\n\n"
      "Codetwine-Loom-Verdict: failed\nCodetwine-Loom-Exit-Status: 1\n",
@@ -1534,7 +1534,7 @@ def test_every_run_on_a_branch_is_read_oldest_first(repo):
         _write(directory, f"r{n}.txt", "r\n")
         _git(directory, "add", "-A")
         _git(directory, "commit", "-qm",
-             f"sandbox: {what}\n\n{what}\n\nCodetwine-Loom-Attempt: {n}")
+             f"sandbox: {what}\n\n{what}\n\nCodetwine-Loom-Exit-Status: 0")
     assert [t["asked"] for t in integrate.commit_record_list(directory, base, "twice")] == \
         ["first thing", "second thing"]
 
@@ -1542,7 +1542,7 @@ def test_every_run_on_a_branch_is_read_oldest_first(repo):
 def test_what_a_run_did_is_read_out_of_its_trailer(repo):
     directory, base = repo
     _committed(directory, base, "told-did",
-               "sandbox: rename the helper\n\nrename the helper\n\nCodetwine-Loom-Attempt: 1\n"
+               "sandbox: rename the helper\n\nrename the helper\n\nCodetwine-Loom-Exit-Status: 0\n"
                "Codetwine-Loom-Did: renamed helper() to parse_line() and moved it to reader.py")
     assert [t["did"] for t in integrate.commit_record_list(directory, base, "told-did")] == \
         ["renamed helper() to parse_line() and moved it to reader.py"]

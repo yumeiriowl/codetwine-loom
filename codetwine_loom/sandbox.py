@@ -6163,10 +6163,10 @@ def path_list_of(text: str) -> list[str] | None:
 _NO_RECORD_LINE = f"{_TRAILER_PREFIX}Record: none"
 
 
-def run_trailer_dict(meta_dict: dict, attempt_dict: dict, request: str = "") -> dict:
+def run_trailer_dict(meta_dict: dict, record_dict: dict, request: str = "") -> dict:
     """Return what the machine knows about a finished run, as commit trailers.
 
-    The values are what the machine decided about the run. An empty attempt gives every
+    The values are what the machine decided about the run. An empty record gives every
     trailer that comes from it None or "".
 
     The trailers of a run that changed a file without going through an editing tool
@@ -6175,7 +6175,9 @@ def run_trailer_dict(meta_dict: dict, attempt_dict: dict, request: str = "") -> 
 
     Args:
         meta_dict: The summary the container wrote beside the patch.
-        attempt_dict: The history entry this run recorded, or {} when it recorded none.
+        record_dict: What the run recorded of itself, by the keys of _TRAILER_KEY_TUPLE:
+            the history entry of a change run, or the outcome of a merge or a stage.
+            {} when it recorded none.
         request: What the run was given, whole: for one task of a split request, the
             request the tasks were split out of. Empty gives its trailer "".
 
@@ -6185,48 +6187,47 @@ def run_trailer_dict(meta_dict: dict, attempt_dict: dict, request: str = "") -> 
     return {
         # The request the run was given, whole
         f"{_TRAILER_PREFIX}Run-Request": request,
-        f"{_TRAILER_PREFIX}Attempt": attempt_dict.get("n"),
-        _VERDICT_TRAILER: attempt_dict.get("verdict"),
-        f"{_TRAILER_PREFIX}Why": attempt_dict.get("why"),
+        _VERDICT_TRAILER: record_dict.get("verdict"),
+        f"{_TRAILER_PREFIX}Why": record_dict.get("why"),
         # What the run said it did
-        f"{_TRAILER_PREFIX}Did": attempt_dict.get("did"),
+        f"{_TRAILER_PREFIX}Did": record_dict.get("did"),
         _EXIT_STATUS_TRAILER: meta_dict.get("exit_status"),
         # Empty when the run wrote through the tools alone
-        f"{_TRAILER_PREFIX}Untooled": " ".join(attempt_dict.get("untooled") or ()),
+        f"{_TRAILER_PREFIX}Untooled": " ".join(record_dict.get("untooled") or ()),
         # The tests this run changed, a red test the run turned green by changing the
         # test among them
-        f"{_TRAILER_PREFIX}Tests-Changed": " ".join(attempt_dict.get("tests_changed") or ()),
+        f"{_TRAILER_PREFIX}Tests-Changed": " ".join(record_dict.get("tests_changed") or ()),
         # How a merging run ended and what it recorded with record_decision(). A change
         # run records neither and its commit carries neither
-        f"{_TRAILER_PREFIX}Ended": attempt_dict.get("ended"),
+        f"{_TRAILER_PREFIX}Ended": record_dict.get("ended"),
         f"{_TRAILER_PREFIX}Decisions": integrate_mod.decision_text(
-            attempt_dict.get("decisions") or [], config.DISPATCH_ANSWER_MAX_CHAR),
+            record_dict.get("decisions") or [], config.DISPATCH_ANSWER_MAX_CHAR),
         # The separator lines a merging run that left its union unsettled says the union
         # may hold
         integrate_mod.SEPARATOR_TRAILER: integrate_mod.separator_text(
-            attempt_dict.get("separator")),
+            record_dict.get("separator")),
         # The sides whose change to a file that run kept out of the union
         integrate_mod.NO_MERGE_TRAILER: integrate_mod.no_merge_text(
-            attempt_dict.get("no_merge")),
+            record_dict.get("no_merge")),
         # Which stage the commit is of, the files a stage changed that are not tests,
         # and what the tests the stage that writes tests wrote say over the commit the
         # change was written against
-        f"{_TRAILER_PREFIX}Stage": attempt_dict.get("stage"),
+        f"{_TRAILER_PREFIX}Stage": record_dict.get("stage"),
         f"{_TRAILER_PREFIX}Non-Test-Changed": " ".join(
-            attempt_dict.get("non_test_changed") or ()),
-        f"{_TRAILER_PREFIX}Tests-Base": attempt_dict.get("tests_base"),
+            record_dict.get("non_test_changed") or ()),
+        f"{_TRAILER_PREFIX}Tests-Base": record_dict.get("tests_base"),
         # The files whose tests were left unsettled when that stage's test tasks were
         # combined
-        f"{_TRAILER_PREFIX}Test-Open": path_list_text(attempt_dict.get("test_open") or ()),
+        f"{_TRAILER_PREFIX}Test-Open": path_list_text(record_dict.get("test_open") or ()),
         # The cases the stage that writes tests found the change does not do, as it
         # recorded them with record_gap()
-        f"{_TRAILER_PREFIX}Gap": integrate_mod.decision_text(attempt_dict.get("gap") or []),
+        f"{_TRAILER_PREFIX}Gap": integrate_mod.decision_text(record_dict.get("gap") or []),
         # The cases the test tasks recorded that the combined tests found done
         f"{_TRAILER_PREFIX}Gap-Done": integrate_mod.decision_text(
-            attempt_dict.get("gap_done") or []),
+            record_dict.get("gap_done") or []),
         # The last commit of an earlier union the commit a merge was written against
         # holds (integrate.union_part_list)
-        f"{_TRAILER_PREFIX}Stand-On": attempt_dict.get("stand_on"),
+        f"{_TRAILER_PREFIX}Stand-On": record_dict.get("stand_on"),
     }
 
 
@@ -6602,12 +6603,12 @@ def run(project: str, output_dir: str, request: str, engine: str = "", image: st
                            "land_refuse": False}
             # Read once: it is written into the commit as trailers and handed back as
             # the verdict
-            attempt_dict = _own_record_dict(history_path, out_dir, record_before_count)
-            result_dict["verdict"] = attempt_dict.get("verdict", "")
+            record_dict = _own_record_dict(history_path, out_dir, record_before_count)
+            result_dict["verdict"] = record_dict.get("verdict", "")
             result_dict.update(_land_patch(
                 project_dir, run_file, base, on_branch, status, take_in,
                 lambda meta_dict: commit_message(
-                    request, run_trailer_dict(meta_dict, attempt_dict,
+                    request, run_trailer_dict(meta_dict, record_dict,
                                               run_request or request)),
                 engine=engine))
             if land and result_dict["commit"]:
@@ -8101,7 +8102,7 @@ _RECORD_SHAPE_DICT: dict[str, Callable[[object], bool]] = {
 
 # The keys of what a run recorded of itself that reach the trailers of its commit
 # (run_trailer_dict)
-_TRAILER_KEY_TUPLE = ("n", "verdict", "why", "did", "untooled", "tests_changed", "ended",
+_TRAILER_KEY_TUPLE = ("verdict", "why", "did", "untooled", "tests_changed", "ended",
                       "decisions", "separator", "no_merge", "stage", "non_test_changed",
                       "tests_base", "test_open", "gap", "gap_done", "stand_on")
 
@@ -8130,7 +8131,7 @@ _REFACTOR_KEY_TUPLE = ("verdict", "why", "did", "untooled", "tests_changed",
 # in none: which stage a commit is of, the files whose tests it leaves open and the
 # earlier union a merge stands on are this machine's alone to decide
 _RECORD_KIND_DICT: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
-    _EDIT_KIND: (("n", "verdict", "why", "did", "untooled", "tests_changed"),
+    _EDIT_KIND: (("verdict", "why", "did", "untooled", "tests_changed"),
                  history.JUDGE_VERDICT_TUPLE),
     _MERGE_KIND: (_MERGE_KEY_TUPLE, _MERGE_VERDICT_TUPLE),
     _TEST_MERGE_KIND: ((*_MERGE_KEY_TUPLE, "gap", "gap_done"), _MERGE_VERDICT_TUPLE),

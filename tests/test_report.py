@@ -35,8 +35,8 @@ def _commit(directory, message):
 
 # The trailers one finished change run leaves on its commit, as sandbox.run_trailer_dict()
 # writes them
-_TRAILERS = ("Codetwine-Loom-Attempt: 1\nCodetwine-Loom-Verdict: {verdict}\n"
-             "Codetwine-Loom-Why: {why}\nCodetwine-Loom-Did: {did}\nCodetwine-Loom-Exit-Status: 0")
+_TRAILERS = ("Codetwine-Loom-Verdict: {verdict}\nCodetwine-Loom-Why: {why}\n"
+             "Codetwine-Loom-Did: {did}\nCodetwine-Loom-Exit-Status: 0")
 
 
 def _message(request, did="did it", verdict="unverified", why="nothing checks it",
